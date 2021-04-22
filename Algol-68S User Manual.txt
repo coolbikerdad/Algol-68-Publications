@@ -1,0 +1,3421 @@
+This document was originally titled:
+
+Algol 68 User Manual
+March 8, 1978
+
+It was intended to be a manual for the PDP-11 Algol68S system available for some
+Operating Systems for the PDP-11, esp. the C.mmp (Hydra) multiprocessor system, and
+Unix Version 6 or 7 systems.
+
+The original manuscript was OCR'd by W.B.Kloke ( klokew@acm.org ). At the present stage
+it is missing distinction between roman and italic characters which the original had.
+
+As the system described allows "reserved word" stropping, this is not really
+detrimental.
+
+Thanks to Andy Walker from Nottingham, who made the copy available to me, and
+who digged out the compiler also to be preserved by PUPS.
+
+	At this early stage the best description of this document involves terms like
+inaccurate, incomplete and misleading.
+
+	Comments on the current document or suggestions for future Algol 68
+documentation  should  be  directed  to  Paul  Knueven  or  sent  via  MAIL  to
+ALGOL68@CMUA.
+
+1.	Introduction
+
+	User, meet Algol 68. Algol 68, meet user. When the bell rings come out fighting,
+and may the best of you win.
+
+	CMU Algol 68 is an extended version of the IFIP-approved Algol 68 sublanguage.
+Disregarding certain features which are in neither official language, the CMU language
+is less than the full language and more than the sublanguage.
+
+	At this time no complete description of the CMU language is available. Chapter
+3 contains the current version of what may some day be such a description. There
+are three sources of information which may be of some help in learning the language.
+
+	First, for someone familiar with Algol 68, the remaining sections of this chapter
+sketch what is available in the CMU language. The differences between the full and
+CMU languages are described briefly in sections 2.1 and 2.2.  Some understanding
+of Algol 68 terminology is necessary to read these sections. The lists of basic symbols
+(See 2.3.3), prelude operators (See 2.4.1) and prelude identifiers (See 2.4.2) should
+remind the already knowledgeable user of what is possible.
+
+	Second, copies of illuminating examples are available from Paul Knueven in
+Science Hall 4209.
+
+	Third, documents which describe the official languages can serve as a useful
+introduction to the CMU language. The "Revised Report on the Algorithmic Language
+Algol 68" (published in two journals, Acta Informatica Vol. 5, Fasc. 1-3, and SIGPLAN
+Notices, May, 1977; and as a separate volume, call number 510.7844024 R45 in the
+Science Hall Library) is the authoritative definition of the full Algol 68 language. This
+is normally found to be difficult for the uninitiated reader to understand. Part V may
+be helpful since it defines the standard operators and identifiers (mostly in terms of
+short programs) and contains some sample programs. The official specification of the
+sublanguage is "A Sublanguage of Algol 68" by P.G. Hibbard in May, 1977 SIGPLAN
+Notices. It too is difficult to read. A textbook, A Practical Guide to Algol 68 by Frank
+Pagan, is usually available in the CMU Bookstore. A survey article, "A Tutorial on Algol
+68" by Andrew Tanenbaum, appeared in the June, 1976 Computer Surveys.
+
+
+
+2.1.	Restrictions
+
+	The following sections briefly describe the restrictions placed on the full Algol
+68 language in order to define the basic CMU language.
+
+
+2.1.1	Modes
+
+	United-modes may not be specified in a particular-program.  However, it is
+permitted to call routines defined in the standard prelude which have united-mode
+parameters. (Upb and print are examples of such routines.) A multiple value may not
+occur as a field of a structured value or as an element of a multiple value. Thus,
+modes such as [ ][ ]amode and struct(..., [ ]amode, ...) are not allowed. There are no
+flexible names. String is a primitive mode distinct from [ ]char. There are no short
+modes. The only long modes are long int, long real, and long compl.
+
+2.1.2	Clauses
+
+	Void-collateral-clauses and vacuums are not allowed. A display may not occur in
+a  position  which is  not  strong, or  as the only  phrase of  a closed-clause.
+conformity-clauses are not permitted, since they are only useful in conjunction with
+united-modes.
+
+
+
+
+2.1.3	Declarations, Declarers and Indicators
+
+	Heap-sample-generators are not permitted, so the heap-symbol may not appear
+in a variable-declaration. A lower-bound is required in an actual-rowed-declarer, that
+is, the form [u]amode is not permitted as a short version of [1:u]amode.  The
+flexible-symbol and union-of-symbol are not allowed in declarers.
+
+
+2.1.4	Units
+
+	Local-generators may not occur as operands in formulas, in actual-bounds, or
+before the first definition of a local range. A go-to-token is required in a jump. A
+jump may not yield a value of mode proc amode. A jump may not by-pass the first
+declaration of any local range containing the label which is its target. Strings always
+have a lower bound of 1. A slice of a string may not have a revised-lower-bound and
+is always dereferenced (i.e. it is not possible to slice out a name which refers to a
+substring; this in turn means that it is not possible to assign to a substring).
+
+
+
+2.1.5	Coercions
+
+	The ref-rowing coercion is not allowed, that is, a value of mode ref amode is not
+coerced to ref [ ]amode. A char value may be widened to a string value and a string
+value may be widened to a [ ]char value.
+
+
+2.1.6	Independence and Identification
+
+	An  applied-mode-indication  may  not  occur  in  an  actual-rower  of  the
+actual-declarer of its mode-definition. The defining occurrence of an indicator (other
+than a label-definition) must precede its first applied occurrence. A priority-definition
+of a dyadic-operator must precede the first operation-definition of that operator. The
+priority of an operator may not be redefined in an inner range.  The test for
+independence of operator-definitions is more restrictive than it is in the full language.
+(Among other things, an operator may not be redefined in an inner range.)
+
+2.1.7	Denotations
+
+There is no void-denotation.
+
+
+2.1.8	Symbols
+
+	A bold tag may not be used as both an operator and a mode-indication in the
+same reach. Only the operator-standards defined in the standard prelude may be used
+in operation-definitions.
+
+
+
+2.1.9	Standard Prelude
+
+	Some environment enquiries are not available in a particular-program.  (See
+2.4.3 for a list of identifiers and values)
+
+
+
+2.1.10	Transput
+
+	There is no formatted transput.  Certain enquiries and operations are not
+supported. See 2.4 for a precise statement of which routines are supplied.
+
+
+2.2.	Extensions
+
+2.2.1	Safe-clause and Export-declaration
+
+	A safe-clause allows a group of declarations to be encapsulated; that is, the
+declarations introduce identifiers which are accessible by each other but are hidden
+from the rest of the program. An export-declaration is used inside a safe-clause to
+override the hiding capability of the safe-clause.  An identifier declared in an
+export-declaration in a safe-clause is known in its usual reach.
+
+
+2.2.2	Module and External-fetch
+
+	These two extensions have been introduced to allow the construction of a
+program by the linking together of several separately compiled program-texts. The
+program of a single compilation may be given a "module name" which can be specified
+in an external-fetch in the program of some other compilation. External-fetches are
+used to access values which are not created in the program in which they appear
+
+2.2.3	Code Values
+
+	A code value is an object which corresponds to a machine language subroutine.
+The   mode   of   a   code   value   is   code amode,   code(amode)bmode   or
+code(amode,bmode)cmode, that is, a code value may have up to two parameters. A code
+value can not be created by an Algol 68 program. The only way to access such a
+value with an external-fetch.
+
+
+2.2.4	New Modes
+
+	It is possible to specify new, unique plain modes by writing newsimple or
+newpile instead of the actual-declarer in a mode-definition. Actions such as assignation
+and ascription may be applied to values of these modes, but there are no actions
+which can do more that copy or move such values. By supplying code values which
+take values of a new mode as parameters or return one as a result, it is possible to
+create a subsystem to manipulate values which may be handled, but not broken apart,
+by the user.
+
+
+
+2.2.5	Mutually Recursive Modes
+
+	Since the language is restricted to force the defining occurrence of an indicator
+to precede any applied-occurrence of the indicator, an extension has been made to the
+language to permit the introduction of mutually recursive modes.
+
+
+2.2.6	Eventual Values
+
+	An object called an eventual value is designed to allow the easy and natural
+specification of parallel processing.
+
+
+2.3.	The Representation Language
+
+
+2.3.1	Tags and Bold Words
+
+	Tags are used as identifiers, labels and field selectors. A tag is represented by
+a letter followed by one or more letters or digits. The characters in a tag may be
+separated by typographical display features (blank, line feed, form feed). The tags 'on
+line end', 'online end' and 'onlineend' are equivalent.
+
+	Bold words are the symbols which appear in this document in boldface. There
+are two kinds of bold words.  Bold tags are used to specify mode indications and
+operators. The other bold words are the "reserved words" or "keywords" of the
+language; e.g. begin, while, true. Bold words consist of a bold letter followed by one or
+more bold letters or digits.  Unlike tags, no typographical display features may
+separate the characters. Since most computers do not have a boldface character set,
+some provision must be made for the representation of these symbols.
+
+	A stropping convention is a set of rules specifying how to indicate bold words.
+There are currently four stropping conventions available.  They are called point,
+upper, lower and res. The default is the point convention in which bold words are
+indicated by a prefix strop character. This strop character may be either a point (.) or
+an apostrophe (').  The use of the strop character is permitted in all stropping
+conventions. The occurrence of a strop followed by an alphabetic character always
+forces the alphanumeric sequence following the strop to be bold.
+
+	The upper convention uses upper case letters to indicate bold letters, while
+lower convention uses lower case letters. A strop may be used to override this as
+described above. In conventions other than these, upper and lower case characters
+for a given letter are considered equivalent.
+
+	In res (reserved word) convention, typographical display features may not
+appear between the characters of a tag or the symbols of a denotation. A sequence
+of alphanumeric characters surrounded by disjunctors (non-alphanumeric characters or
+typographical display features) represents a bold word, if one exists, with that
+particular spelling; otherwise it represents a tag. The lexically first occurrence of a
+user-introduced bold tag must be stropped.
+
+
+2.3.2	Pragmat Items
+
+	The following pragmat items are implemented. They act as compiler directives
+when they appear between a pair of matching pragmat symbols (i.e. pragmat, pr, or ::).
+
+
+listing		Enable production of compiler listing
+lower		Set stropping convention to lower
+nolisting	Suppress production of compiler listing
+nowarnings	Suppress output of compiler warning messages
+page		Skip to top of new page in listing output (not implemented)
+res		Set stropping convention to res
+point		Set stropping convention to point
+upper		Set stropping convention to upper
+warnings	Enable output of compiler warning messages
+
+
+2.3.3	Basic Symbols
+
+	The following are the non-tag symbols of Algol 68. Those which appear as
+boldface must be represented according to some stropping convention. Remember in
+res stropping no tag may be spelled the same as any of these. In some cases there
+are two representations of a symbol. Where this is so, both representations appear
+on the same line.
+
+Symbol		Where used
+
+at	@	revised-lower-bound of slice
+begin		closed-clause, collateral-clause
+bits		declarer
+bool		declarer
+by		loop-clause
+bytes		declarer
+case		case-clause
+channel		declarer
+char		declarer
+co		comment
+code		code-declarer
+codeop		code-operation-declaration
+comment		comment
+compl		declarer
+do		loop-clause
+efas		safe-clause
+elif		conditional-clause
+else		conditional-clause
+end		closed-clause, collateral-clause
+esac		case-clause
+event		eventual-declarer
+exit		completer in serial-clause
+export		export-declaration
+ext		external-fetch
+false		boolean-denotation
+fi		conditional-clause
+file		declarer
+for		loop-clause
+from		loop-clause
+go		with to in jump
+goto		jump
+heap		generator
+if		conditional-clause
+in		case-clause
+int		declarer
+is	:=:	identity-relation
+isnt	:/=:	identity-relation
+loc		generator, variable-declaration
+long		declarer, denotation
+mode		mode-declaration
+module		module-declaration
+newsimple		mode-declaration
+newpile		mode-declaration
+nil		nihil
+od		loop-clause
+of		selection
+op		operation-declaration
+ouse		case-clause
+out		case-clause
+par		parallel-clause
+pr		pragmat
+pragmat		pragmat
+prio		priority-declaration
+proc		procedure-decl4rer
+proctime	declarer
+real		declarer
+ref		reference-declarer
+safe		safe-clause
+secloc		generator
+sema		declarer
+short		declarer, denotation
+skip		skip
+string		declarer
+struct		structure-declarer
+then		Conditional-clause
+to		loop-clause, with go in jump
+true		boolean-denotation
+void		declarer
+while		loop-clause
+(		(open symbol) closed-, collateral-, conditional-, case-clauses
+)		(close symbol) closed-, collateral-, conditional-, case-clauses
+,		(comma symbol) case-, collateral-clauses, declaration-list
+:		(colon symbol) label, routine-text, trimmer, bounds
+;		(semicolon symbol) serial-clause
+:=		(becomes symbol) assignation
+[		(sub symbol) slice, rowed-declarer
+]		(bus symbol) slice, rowed-declarer
+=		(equals symbol) identity-, mode-, priority-declarations
+#		(comment symbol) comment
+::		(pragmat symbol) pragmat
+!	|	(stick symbol) brief-conditional-clause, brief-case-clause
+!:	|:	(again symbol) brief-conditional-clause, brief-case-clause
+\	e	(times ten to the power symbol) real-denotation
+"		(quote symbol) character-, string-denotations
+""		(quote image symbol) character-, string-denotations
+
+	The following bold Words are used in the full Algol 68 Revised language and are
+not included in the CMU language.
+
+empty
+flex
+format
+union
+
+2.4.	Standard and Particular Preludes
+
+
+2.4.1	Operators
+
+	The following is a list of the operators which are defined in the standard and
+particular preludes of CMU Algol 68. Two techniques are used here to make the list
+sh9rter than it would be otherwise. First, the letter L indicates places where zero or
+one occurrence of the symbol long must be inserted. All the L's in a particular entry
+of the list must be repeaced by the same number of long's. Second, an asterisk is used
+to indicate that a dyadic operator exists both with the parameter modes in the order
+shown and with the parameter modes interchanged.
+
+	All of the operators are currently available except those which require or return
+a value of a long mode.
+
+Operator	Modes
+
+	abs	proc(L int)L int
+		proc(L real)L real
+		proc(L compl)L compl
+		proc(bool)int
+		proc(bits)int
+		proc(char)int
+	and	proc(bool,bool)bool
+		proc(bits,bits)bits
+	arg	proc(L compl)L real
+	bin	proc (int)bits
+	conj	proc(L compl)L compl
+	down	proc (sema)void
+/:=	divab	proc(ref L real,L real)ref L real
+		proc(ref L real,L int)ref L real
+		proc(ref L compl,L compl)ref L compl
+		proc(ref L compl,L real)ref L compl
+		proc(ref L compl,L int)ref L compl
+	elem	proc(int,bits)bool
+		proc(int,bytes)char
+	entier	proc(L real)L int
+=	eq	Same as gt plus
+		proc(L compl,L compl)bool
+		proc(L int,L compl)bool*
+		proc(L real,L compl)bool*
+		proc(bool,bool)bool
+		proc(bits,bits)bool
+>=	ge	Same as gt plus
+		proc(bits,bits)bool
+>	gt	proc(L int,L int)bool
+		proc(L real,L real)bool
+		proc(L int,L real)bool*
+		proc(char,char)bool
+		proc(string,string)bool
+		proc(char,string)bool*
+		proc(bytes,bytes)bool
+<=	le	Same as ge
+	level	proc(sema)int
+		proc(int)sema
+	leng	proc(int)long int
+		proc(real)long real
+		proc(compl)long compl
+<	lt	Same as gt
+	lwb	proc(rows)int
+		proc(string)int
+		proc(int,rows)int
+-:=	minusab	Same as divab plus
+		proc(ref L int,L int)ref L int
+%*	mod	proc(L int,L int)L int
+%*:=	modab	proc(ref L int,L int)ref L int
+	ne	Same as eq
+	not	proc(bool)bool
+		proc(bits)bits
+	odd	proc(L int)bool
+	or	proc(bool,bool)bool
+		proc(bits,bits)bits
+%	over	proc(L int,L int)L int
+%:=	overab	proc(ref L int,L int)ref L int
++:=	plusab	Same as minusab plus
+		proc(ref string,string)ref string
+		proc(ref string,char)ref string
++=:	plusto	proc(string,ref string)ref string
+		proc(char,ref string)ref string
+	repr	proc(int)char
+	round	proc(L real)L int
+	shl	proc(bits,int)bits
+	shorten	proc(long int)int
+		proc(long real)real
+		proc(long compl)compl
+	shr	proc(bits,int)bits
+	sign	proc(L int)L int
+		proc(L real)L int
+*:=	timesab	Same as minusab plus
+		proc(ref string,int)ref string
+	up	proc(sema)void
+	upb	Same as lwb
+-		proc(L int)L int
+		proc(L real)L real
+		proc(L compl)L compl
+		proc(L int,L int)L int
+		proc(L real,L real)L real
+		proc(L compl,L compl)L compl
+		proc(L int,L real)L real*
+		proc(L int,L compl)L compl*
+		proc(L real,L compl)L compl*
++		Same as - plus
+		proc(string,string)string
+		proc(char,char)string
+		proc(char,string)string*
+*		proc(L int,L int)L int
+		proc(L real,L real)L real
+		proc(L compl,L compl)L compl
+		proc¼ int,L real)L real*
+		proc(L int,L coinpl)L compl*
+		proc(L real,L compl)L compl*
+		proc(int,char)string*
+		proc(int,string)string*
+/		proc(L int,L int)L real
+		proc(L real,L real)L real
+		proc(L compl,L compl)L compl
+		proc(L int,L real)L real*
+		proc(L int,L compl)L compl*
+		proc(L real,L compl)L compl*
+^		proc(L int,int)L int
+		proc(L real,int)L real
+		proc(L compl,int)L compl
+**		Same as ^
++*		proc(L int,L int)L compl
+		proc(L real,L real)L compl
+
+
+2.4.2	Identifiers
+
+	All of the following identifiers are available except 'associate', 'stand back', and
+'stand back channel'.
+
+Identifier	Mode
+
+arccos		proc(real)real
+arcsin		proc(real)real
+arctan		proc(real)real
+associate	proc(ref file,ref string)void
+bits pack	proc([]bool)bits
+bytes pack	proc([]char)byles
+chan		proc(ref file)channel
+char number	proc(ref file)int
+close		proc(ref file)void
+cos		proc(real)real
+establish	proc(ref file,string,channel,int,int,int)int
+exp		proc(real)real
+fixed		proc(number,int,int)string
+float		proc(number,int,int,int)string
+get		proc (ref file,[]in)void
+get bin		proc(ref file,[]inbin)void
+last random	ref int
+line number	proc(ref file)int
+ln		proc(real)real
+make term	proc (ref file,string)void
+max abs char	int
+max int		int
+max real	real
+new line	proc(ref file)void
+new page	proc(ref file)void
+next random	proc(ref int)real
+on line end	proc (ref file,proc(ref file)bool)
+on logical file end	proc(ref file,proc(ref file)bool)
+on page end	proc(ref file,proc(ref file)bool)
+on physical file end	proc(ref file,proc(ref file)bool)
+open		proc(ref file,string,channel)int
+page number	proc (ref file)int
+pi		real
+print		proc([]out)void
+put		proc(ref file,[]out)void
+put bin		proc(ref file,[]outbin)void
+random		proc real
+read		proc([]in)void
+read bin	proc ([]inbin)void
+reset		proc(ref file)void
+scratch		proc(ref file)void
+set		proc (ref file,int,int,int)void
+sin		proc (real)real
+small real	real
+space		proc (ref file)void
+sqrt		proc(real)real
+stand back	ref file
+stand back channel	channel
+stand in	ref file
+stand in channel	channel
+stand out	ref file
+stand out channel	channel
+tan		proc (real )real
+whole		proc(number,int)string
+write		proc(ref file,[]out)void
+write bin	proc(ref file,[]outbin)void
+cons in channel	channel
+cons out channel	channel
+fixed page channel	channel
+get proc time	code(ref proctime)void
+musecs		code(proctime)real
+on error	code(proc(int,int,bits)bool)void
+on sys trace	code(code(int,bits)void)void
+on tick		code (proc (int,int)void)void
+sos file channel	channel
+start proc time	code void
+sys trace	code(int,bits)void
+var page channel	channel
+warning level	code(int)void
+
+
+2.4.3	Environment Enquiries
+
+The CMU language does not include all of the environment enquiries.  The
+following list gives the values of all the environment enquiries; those which are
+available in the language are marked by an asterisk
+
+Identifier		Value
+
+int lengths		2
+int shorths		1
+max int*		2**15	- 1	(i.e. 32767)
+max long int		2**31	- 1	(i.e. 2147483647)
+real lengths		2
+real shorths		1
+max real*		(2 ** 127)-(2 ** 103)  (about 1.70141173319o38)
+max long real		(2 *4 127)-(2 ** 71)  (about 1.70l41l8346046922837e38)
+small real*		(2	**	-23)	(about l.l920928955e-7)
+small long real		(2	**	-55)	(about 2.775557561562892351e-17)
+bits lengths		1
+bits shorths		1
+bits width		15	(also upb []bool(8r1) )
+bytes lengths		1
+bytes shorths		1
+bytes width		2  (also upb []char(bytes b = bytes pack(""); b) )
+max abs char*		127
+null character		repr 0
+flip			"T"
+flop			"F"
+error char		"*"
+blank			repr 32
+
+
+3.	Introduction  to  CMU  Algol 68
+
+
+	This chapter is meant to become a complete description of and introduction to
+the Algol 68 language (or, that variety of it which is available at CMU). When this goal
+is achieved the preceding chapter will no longer be needed.
+
+	As this chapter is being developed the attitude of the authors is that whatever
+information has been written will be included in the document.  The idea is that
+something is better than nothing. This means that at any given moment the contents
+may seem incomplete, uneven in style, lack polish, and/or without coherent
+organization. We will frequently refer the reader to "more complete documents" in
+cases where we have been too hurried or too lazy to supply details. The reader is
+asked to be as forgiving as possible.
+
+	This tutorial is definitely intended for a reader with some familiarity or prior
+experience with other programming languages, be they even as simple as BASIC or as
+weird as pure LISP. Non-programmers should give up right here and go off to take a
+course in programming. When a new concept is introduced which is called by other
+names in other languages, the other names are presented in [brackets] after the Algol
+68 name of the concept.
+
+
+3.1.	Preface
+
+	The method of exposition used in this chapter is mostly the presentation of
+examples--small snatches of program text that illustrate various corners of the
+language. In spite of the tutorial nature of the chapter, therefore, we hope that it will
+be usable as a reference.  Every effort has been made to use examples that are
+typical of user programs; most of the larger ones have been copied directly from such
+programs.
+
+	The order of the sections is such that there is as little forward referencing as
+possible, i.e. it is (hopefully) seldom necessary to look at a later section in order to
+uqderstand some earlier example. This organization has peculiar consequence: that
+certain sections, such as the section on transput (input/output), which you must know
+at least a little about in order to write useful programs, are placed near the end. Don't
+be disturbed by this; everything you need to know is here, somewhere or other.
+
+	Another peculiar practice we have followed, for a variety of good reasons, is the
+carrying over of definitions from one example to another. An identifier declaration
+may appear in one example, and the identifier so declared may appear in the next few
+examples or even reappear a couple of pages later. Since this practice can cause
+confusion, we have tried not to overuse it; but be warned.
+
+	A note about terminology: pursuing the goals of precision and unambiguousness,
+the authors of the Revised Report invented a whole new kind of grammar and a whole
+slew of new words, for the description of programming languages in general and Algol
+68 in particular. Those two goals were of little interest to us in writing this tutorial,
+
+and we have used a careless mixture of terms from the Revised Report with terms and
+concepts from other programming languages and literature to say what we mean.
+However, when we have used terms from the Revised Report, we have tried to be
+consistent with the original use of those terms.
+
+
+
+3.2.	Stropping, Upper and Lower Case, and other Perversions
+
+	This section describes the rules for using upper and lower case letters, for
+using blanks within identifiers, and for distinguishing those things that in other
+languages are called "reserved words" or "keywords". In the CMU system there are
+four alternative sets of rules; you can choose the one you like best for a program, and
+if you are indecisive (or perverse), you can even switch from one set of rules to
+another in the middle of a program. Before describing the four alternatives and giving
+examples of them, we'll explain why they are the way they are.
+
+	The rules of Algol 68 on this subject are more appropriate for programs which
+are published (i.e. as algorithms in textbooks or journals) than for programs which
+must be input to a computer using some commonly available input device.  It is
+intended that programs be written using two alphabets: keywords (such as if and end),
+operators (mod, abs), and modes (real, bool) are supposed to be written in "bold face",
+while identifiers, such as variables and procedure names, are supposed to be written
+with the non-bold alphabet (perhaps this should be called "timid face"). If you can use
+input devices with both lower and upper case letters, you may find it convenient to
+pretend that upper case letters are bold face and lower case letters are timid face, or
+vice versa. Many programmers do not even have the luxury of two cases of letters.
+To these unfortunates, two options are open. They may either distinguish the words
+which are meant to be bold face by putting a dot or an apostrophe before each one;
+or they may not. You may ask, "Why should I put a dot in front of each bold face
+Word if I don't have to"? The privilege that this allows you, besides compatibility with
+other compilers which insist that you use dots or apostrophes, is that you may use
+blanks in your timid face words. For instance, the predefined variable "lastrandom"
+may be referred to as "last random", "lastran dom", "lastr and om", and so forth,
+indiscriminately. (Note that you can never use blanks in bold face words, no matter
+what set of rules you use).
+
+	Later, in section 3.4, we'll show how to indicate to the compiler which set of
+rules you prefer; first, here are samples of all four styles:
+
+
+#
+"Upper" convention: keywords, etc. are in upper case;
+all others must be in lower case.
+#
+IF a THEN b := c FI;
+#
+
+#
+"Lower" convention: exactly the reverse of "Upper"
+
+if D then E := F fi;
+
+#
+"Res" convention: keywords, etc. are reserved" and need
+not be specially distinguished. There are some restrictions:
+#
+if UsingResconvention ThEn iDentiFiersmustBERuntogEthErwithoutblanks fi;
+#
+"Point" or "Strop" convention: keywords, etc. are distinguished by
+starting them with a period or apostrophe. THIS IS THE DEFAULT.
+#
+	if 'Not using res convenTION tHEN IdentiFIERS MAY CONtain blanks 'Fi;
+
+
+
+	Incidentally, no matter what convention you are using, you may always use a
+period or apostrophe to signal the start of a bold face word.
+
+
+
+3.3.  Comments
+
+	We mention the Comment first because it is the simplest and easiest to use
+construct in the whole Algol 68 language. The semantics of comments is: you may put
+as many as you like anywhere in your program, and it will execute just as if you had
+not put in any at all. Those of you who are familiar with program verification will
+realize that this leads to a remarkably simple proof rule for this versatile construct.
+You will find it helpful to actually strew your program with these useful little
+creatures.
+
+	A word of caution, however. Like many others, the CMU ALGOL 68 compiler is
+considerably less rigorous about checking the correctness of your comments, than
+about checking the other constructs in your program. Indeed, errors in your comments
+are frequently not caught at run time, even after several runs of the program. Thus
+you, the programmer, must be extra careful about such errors; they can be insidious
+and extremely damaging.
+
+	A comment may begin with the letter # or with either of the keywords co and
+comment; it must be ended with the same thing that began it:
+
+
+# The following code is wrong. #
+co The following code cannot possibly be executed. co
+comment
+"Not only was it difficult to modify the evaluation function --
+It was difficutt even to find it in the listing of the program."
+David Slate
+comment
+
+
+	A comment may occur anywhere in a program (except between the individual
+characters of a single word, number, operator, etc.), and may stretch over several
+lines.  A common mistake is to forget the indication of the end of a comment; see
+section 3.9.
+
+3.4.	Pragmats [pseudo-comments; directives]
+
+	Pragmats are a catch-all language feature, by means of which you can tell the
+ALGOL 68 system miscellaneous things about your program and how you would like it
+treated. A pragmat may begin with a double colon (::), or with either of the keywords
+pr or pragmat, and like a comment it must be ended with the same thing that began it:
+
+
+
+:: upper nowarnings ::
+COMMENT
+	"upper" indicates that the program is written in upper convention,
+at least until the next pragmat. "nowarnings" tells the compiler not
+to print any warning messages that should arise, on the user's terminal
+COMMENT
+
+PR point nolisting PR
+.Pragmat
+lower
+listing
+.Pragmat
+
+
+
+	Note that the individual pragmat items are timid face words; also, if a pragmat
+item changes the convention for distinguishing bold face from timid face, it does not
+take effect until the end of the pragmat. A list of the available pragmat items is in
+section 2.3.2.
+
+
+3.5.	Values, Modes, and Actions
+
+	In this section we will look at the data structuring and manipulation features of
+Algol; in the next two sections we will look at control structures: first for ordinary
+sequential control, then for parallel control.
+
+
+
+3.5.1	Standard Prelude [Predeclared; built-in] Modes [Types]
+
+     We will refer to what you may already know of as "data types", by the name
+"modes".  We will look at rowed modes [arrays; vectors; matrices] and structured
+modes [structures; records] later; but a number of more basic modes are available built
+in to the language:
+
+int	integer			[fixed point]
+real	real			[floating point]
+bool	boolean			[logical]
+bits	small mask - 15 booleans	[set; packed boolean]
+char	character	
+string	string	
+bytes	short string - 2 characters	
+compl	complex	
+
+plus others which we will cover later. Many examples of the use of values of these
+modes will appear in subsequent sections
+
+
+3.5.2	Various Operators
+
+	Algol has most of the arithmetic operators you know and love from other
+languages. Here are just a few samples:
+
+
+3 + 4	integer addition	proc (int,int) int
+a >= b	comparison		proc (int,int) bool
+abs x	absolute value		proc (int) int
+s or t	boolean operator	proc (bool,bool) bool
+
+There are other operators you may not have seen before:
+
+# Two flavors of division #
+
+3 % 2	yields 1		proc (int,int) int
+3 / 2	yields 1.5		proc (int,int) real
+
+# Two flavors of real-to-integer conversion #
+
+round	1.6	yields	2	proc (real) int
+entier	1.6	yields	1	proc (real) int
+round	-1.4	yields	-1
+entier	-1.4	yields	-2
+
+# Module #
+
+11 %* 3		yields 2 	proc (int,int) int
+-11 %* 3	yields 1
+11 %* -3	yields 2
+-11 %* -3	yields 1
+
+# Exponentiation - ONLY integer exponents, please #
+
+4 ^ 3		yields 64	proc (int,int) int
+4 ** 3		means the same
+1.5 ^ -2	yields 0.44444...	proc (real,int) real
+#	after the declaration #
+compl z  (0-0, 1.0);
+z ^ 2	yields (-1.0, 0.0)	proc (compl,int) compl
+
+#	Complex operations #
+
+#	after the declaration #
+compl a = (3.0, 4.0),
+	b = (4.9, 3.0);
+a + b	yields (7.0, 7.0)	addition
+a - b	yields (-1.0, 1.0)	subtraction
+a * b	yields (0.0, 25.0)	multiplication
+a / b	yields (0.96, 0.28)	division
+- a	yields (-3.0, -4.0)	negation
+conj a	yields (3.0, -4.0)	conjugation
+abs a	yields 5.0	magnituda
+arg a	yields 0.9273	angle in radians
+
+#	String & character operations #
+
+"AbC" + "dEf"	yields "AbCdEf"	concatenation
+"X" * 4		yields "XXXX"	replication
+3 * "zQ"	yields "zQzQzQ"
+
+#	Bits operations; denotation [representation] of Bits values #
+
+16rf, 8r17, 4r33, 2r1111,	all denote the same BITS value
+bin 15		yields the same BITS value
+16rf0 shr 4	yields 16rf	logical shifting
+16rf shl 4	yields 16rf0
+16rf0 >= 16r70	yields true	set inclusion
+16rf0 >= 16rf	yields false
+4 elem 16rf	yields true	bit extraction
+
+#	Various kinds of conversion #
+
+repr 65		yields "a"	proc (int) char (ASCII conversion)
+abs "a"		yields 65	proc (char) int
+abs true	yields 1	proc (bool) int
+abs false	yields 0	
+abs 16rf	yields 15	proc (bits) int
+bin 15		yields l6rf	proc (int) bits
+
+#	Miscellany #
+
+odd 3		yields true	proc (int) bool
+odd 2		yields false
+sign -2		yields -1	proc (int) int
+sign 0		yields 0
+sign 1001	yields 1
+
+3.5.3	Identifiers, Variables, Assignation
+
+	In Algol 68, the concepts of variables, pointers (called "references" or "names"),
+and assignation have been reorganized and unified, with consequences that are serious
+and far-reaching. We will defer discussion of this until section 3.5.7; in this section we
+will just present a few simple declarations, such as are likely to be familiar from other
+programming languages.
+
+	Identifiers must be declared before they are used. Definitions of identifiers
+follow "range structure", which is similar to Algol 60 "block structure"; the differences
+will be explained in section 3.6.4.
+
+
+#	Identity [constant; Parameter] declarations #
+
+int j = 3;
+real a = 2.7818281828;
+real a = b + c;	# need not be constant #
+
+# variable declarations #
+
+int g;
+	equivalent to
+ref int g = loc int;
+
+# initialized variable declarations #
+
+int k := 3;
+	equivalent to
+ref int k = loc int := 3;
+
+compl i := (0.0, 1.0);
+	or alternately
+compl i := 0.0 +* 1.0;	# +* is the "plus i times" operator #
+
+# assignation #
+
+k := 6 + m;
+a := b := c := 4.0;
+
+# operations combined with assignation #
+
+k +:= 1
+	equivalent to
+k := k + 1
+
+b %*:= 3
+	equivalent to
+b := b %* 3
+
+n := p +:= q + r
+	equivalent to
+p +:= (q + r);
+n := p
+
+	special case for strings:
+s1 +=: s2
+	equivalent to
+s2 := s1 + s2
+
+	as well as the usual
+
+s1 +:= s2
+	equivalent to
+s1 := s1 + s2
+
+
+3.5.4	Coercions [Conversions]
+
+	In Algol 68, as in many languages, it is often possible to use a value of one mode
+in a case where a value of some other mode is really required. For instance, in the
+following declaration:
+
+
+compl c = (3, 4);
+
+
+the int values 3 and 4 are used where real values are required. In cases like this the
+system automatically converts the value from the given mode to the required mode;
+this is called a coercion.  In Algol 68 there are limitations on what coercions are
+automatically done where, and you may occasionally find it necessary to explicitly
+force a conversion to be done, by means of a "cast":
+
+
+int i = 1234;
+...
+real r = real (i) ^ 2;
+#
+The exponentiation would overflow if it were done as an integer
+operation; therefore i is converted to a real, and a real
+operation is performed.
+#
+
+Most of the time, however, casts are unnecessary.
+
+	Here we present some of the simpler coercions; more will be presented in later
+sections. Note that there is no coercion from real to int; you must use round or entier
+for this purpose.
+
+
+#	Widening #
+
+#	integer to real #
+
+real a := 3;
+
+# - real to complex #
+
+compl z := 3;
+
+# - character to string #
+
+string $ := a
+
+#	Dereferencing #
+
+int a, b;
+
+a := b;
+
+
+3.5.5	Multiple Values [Arrays; Vectors; Matrices]
+
+	Algol 68 multiples, also called "rows", are considerably generalized from the
+arrays of earlier programming languages. The size of a multiple need not be known at
+compile time, and its lower bound need not be 0 or 1. Indefinitely many dimensions
+are permitted. Any contiguous sub-matrix of a matrix, or sub-vector of a vector or
+matrix, may be renamed and considered to be a matrix on its own (this is called
+"trimming" or, when the number of dimensions of the sub-matrix or vector is less than
+that of the original, "slicing"). Whole rows or sub-rows may be assigned in a single
+assignment operation. Finally, there is an automatic coercion, rowing, which converts a
+value of any mode to a row (of length 1) of values of the same mode. These are all
+illustrated below.
+
+	Strings may be trimmed and sliced as if they were rows of characters. However,
+they are not rows of characters, and there are some restrictions on this, as will be
+explained later.
+
+
+#	Row identity declarations #
+
+[]int ri = (1, 2, g, h, 1001);
+[]string rs = ("a", "bc", "def");
+
+# Row variable declarations #
+
+[6:8]real rr;
+[1:5]int rri := (1,2, g, h, 1001);
+
+# Dynamic bounds #
+
+[1:(int n; read (n); n)]real rrr;
+
+# Coercions involving rows #
+
+# - Rowing: Anymode to []Anymode #
+
+[]bool rb = true;
+
+# - Widening: Bits to []Bool #
+
+[]bool rb = 16r7f0f;
+
+# -  Widening: Bytes or String to []Char #
+
+char re = "abc";
+
+# Multiple dimensions #
+
+[,]int r2i  (ri, (3, 6, i, 1002, j));
+[1:2,4:5]int r22i = ((1, 1), (1,1));
+
+#	Slicing [indexing; subscripting] #
+
+ri[5]		yields 1001
+rri[6]		yields 1   (after dereferencing)
+r2i[2,1]	yields 3
+
+# Size enquiries #
+
+lwb rr		yields 6	lower bound
+upb rr		yields 8	upper bound
+1 upb r2i	yields 2	upper bound of first dimension
+2 upb r2i	yields 5	upper bound of second dimension
+
+# Trimming #
+
+[,]int r9 = ((1, 2, 3), (4, 5, 6), (7, 8, 9));
+
+r9[1, ]		is like (1, 2,3)	omitted subscripts
+r9[ ,1]		is like (1, 4, 7)
+r9[2:3,2:3]	is like ((5, 6), (8, 9))     trimmers
+r9[2:3, ]	is like ((4, 5, 6), (7, 8, 9))
+r9[2: ,]	is the same as r9[2:3, ]  omitted upper-bound [oo]
+r9[ :2,]	is the same as r9[1:2, ]  omitted lower-bound
+r9[:,:]		is the same as r9
+
+# Revised lower bounds #
+
+[,]int r94 = r9 [@4,@6];
+
+#
+Now, r94 has the same elements as r9,
+but they're numbered (bounded) differently.
+#
+
+
+1 lwb r94	yields	4
+1 upb r94	yields	6
+2 twb r94	yields	6
+2 upb r94	yields	8
+
+r94[4,7]	yields 2
+r94[4, ]	is like r9[1,@6]
+r94[5:6,7:8]	is like r9[2:3,2:3],
+		i.e.	like ((5, 6), (8, 9))
+
+[,]int rx = r94[@5,7:8@-3]
+
+1 lwb rx	yields	5
+1 upb rx	yields	7
+2 lwb rx	yields	-3
+2 upb rx	yields	-2
+
+rx[:,:]		is like ((2, 3), (5, 6), (8, 9))
+rx[5,-2]	yields 3
+
+# Row assignation #
+# The bounds of the source and the destination must be identical #
+
+rr[7:8] := (pi, rri[4]);
+
+[1:3,1:3]real rr9;
+rr9		:= r9;		legal
+rr9[2:3,2:3]	:= r9[2:3,2:3];	legal
+rr9[ ,2:3]	:= rx;		illegal
+rr9[ ,2:3]	:= rx[@1,@1];	legal
+-rr9[2,1] := 8;
+rr9[2, ] := (30, x + y,1.0);
+
+#	String slicing & trimming #
+
+string s := 'abcdefg'
+s[2]	yields "b"	(char)
+s[2:2]	yields "b"	(string)
+s[2:5]	yields "bcde"
+s[ :4]	yields "abcd"
+s[3: ]	yields "cdef"
+
+Note, however, that substrings cannot be assigned to; and that revised lower bounds
+may not be used with strings. Thus the following assignations and declarations are
+ALL ILLEGAL:
+
+
+s[1:3] := "dfh";
+s[5] := "Q";
+string t = s[1:4@2];
+string r = s[@0];
+
+
+3.5.6	Structured Values [Structures; Records]
+
+	We will give a few examples of the use of structures and structured values here.
+However, much more interesting and instructive examples will be given later: in section
+3.5.7, when we discuss pointers, and in section 3.6.3, when we discuss operator
+definitions. The examples we give here are not likely to be very interesting.
+
+	A structure mode is composed of a group of fields of various modes. These
+fields are addressed by selectors; each field selector must be distinct from the other
+selectors in the same structure, but need not be distinct from other selectors in other
+structures, or even from other identifiers, such as those declared as variables. If two
+structure modes have fields whose modes and selectors all match, the modes are said
+to be "equivalent", i.e. they are effectively the same mode.  For instance, after the
+declarations:
+
+mode a = struct (real r, string s);
+mode b = struct (real r, string s);
+
+
+a x;	# defining a variable called x #
+b y;
+
+
+
+	the assignation
+
+
+x := y
+
+
+is legal, because the modes of x and y are the effectively the same.
+
+	The most familiar structured mode is compl, which is defined in the Standard
+Prelude:
+
+
+mode compl = struct (real re, im);
+
+
+
+Here are some examples of uses of this mode, and other structured modes:
+
+
+compl a := (2.1, 3.2);
+...
+re of a +:= 10.5;
+if im of a > 0
+then a *:= 2 fi;
+
+[]compl rc = ((1,2), (3,4), (5,6));
+re of rc	is like (1, 3, 5)
+im of rc[2:3] is like (4, 6)
+
+
+mode rational = struct (int num, denom);
+mode city = struct (string name, bytes state);
+city here := ("Pittsburgh", bytes pack("PA"));
+
+flame of hera := "McKeesport"
+
+
+
+
+3.5.7	More about Names, References, and Pointers
+
+	You will find this section indispensable if you write  any  programs which
+manipulate lists, trees, graphs, or other data structures involving pointers; but you will
+find it useful regardless of what kind of programs you write, for understanding what is
+behind Algol 68, and what goes on when a high-level programming language runs on a
+computer.
+
+	Henceforth we will not use the word "name" as it is usually used, i.e. as a
+synonym for "identifier", but in its technical sense. In Algol 68 a "name" is a particular
+kind of value, one which can "refer" to some other value. The concept of "name"
+corresponds approximately to the notion of "address" or "pointer" in assembly level
+programming; the "contents" of an address corresponds to the thing referred to by a
+name.
+
+For instance, consider the declaration:
+
+
+int a := 3;
+
+
+
+	This declares a "name" a, which is initialized to refer to 3. A later assignation
+may cause a to refer 4 or same other value of mode int. a itself is not of mode int, but
+of mode ref int; in general if a value is a name, its mode is ref x where x is some other
+mode.
+
+	Note the difference between the above declaration, and this declaration, which is
+similar in superficial appearance:
+
+
+int b = 3;
+
+
+Here b is a value of mode int. It is not a name, and does not "refer to" 3; instead it IS
+3, and cannot be set to 4 any more than 3 can change to 4. This may seem obvious,
+but consider another example, which people sometimes find confusing.  After the
+declaration:
+
+
+compl c =(3,4);
+
+
+C is not a name, but a value of mode compl; neither its real part nor its imaginary part
+may be altered.
+
+	Names themselves can be referred to; this leads us to the concept of "pointers".
+Consider this structure mode definition:
+
+mode list = struct (int item, ref list next);
+
+	Each value of mode list has two field sub-values: an integer, and a pointer to
+another value of mode list.  (The pointer may be nil; nil is a special value which may be
+thought of as a "pointer to nothing", which can be used as if it were any mode ref x.
+We will see more examples of nil later.) We may declare a variable b which refers to
+list values:
+
+list b := (3, nil);
+
+# And we may make its pointer field point to itself: #
+
+next of b := b;
+
+# Or we may ordain a new list value for b to point to: #
+
+next of b := heap list := (5, nil);
+
+# Let's do it again: #
+
+next of next of b := heap list := (10, nil);
+
+
+	The last two examples illustrate the use of a "generator", in particular a
+"heap-generator".  Names are a peculiar sort of value: new names can be created.
+Programs cannot create new integers, obviously; the integers have all been created
+already. They cannot even create new values of mode list, as you will realize if you
+think about it, though they can mention ones that have never been mentioned before.
+But programs can create new names. This is analogous to finding new addresses in
+which to carry out computations. The generator: heap list finds a new name which can
+refer to list values; the assignation:
+
+heap list := (5, nil)
+
+initializes that new name to refer to a list value; and the further assignation to next of
+b sets the pointer field of b to be that new name. Here is another example, from a
+"real" program:
+
+mode philosopher = struct (ref philosopher left, right,
+	sema private,
+	int number of forks,
+	string name);
+
+philosopher head := (nil, nil, level 0, 0, names[1]);
+ref philosopher new;
+left of head := right of head := head;
+for i from 2 to upb names
+do
+new := loc philosopher := (left of head, head, level 0,
+	0, names[i]);
+	right of left of new := left of right of new := new
+od;
+
+
+Here, a group of philosopher values are set up to point to each other in a circle. The
+expression loc philosopher is a use of a "local-generator", similar in its action to the
+heap-generator used earlier. The distinction between loc and heap is rather technical
+and will not be covered in this tutorial; for now, you should generally use heap, until
+you find out when it is legal to use loc.
+
+
+	Note that a declaration of a variable is a creation of a new name, and thus
+involves (at least implicitly) a generator. In fact, as we noted briefly in section 3.5.3,
+the two declarations:
+
+
+int a := 3;
+
+# and #
+
+ref int a = loc int := 3;
+
+are identical in their effect; the first is technically just an abbreviation of the second.
+
+You can see why, in the section on coercions (3.5.4), we said that the assignation
+a := b involved a dereferencing. The mode of b is ref int; since- a can only refer to an
+int, b must be dereferenced (the thing referred to by b must be got at) before the
+	assignation can take place.
+
+	There are two constructs, is and isnt, also known as ":=:" and ":/=:", which can be
+used to test for equality between pointers. (They look like operators, but for technical
+reasons they are considered a separate kind of construct, "identity relations").  For
+instance, after:
+
+
+int a := 3, b := 3;
+ref int c = b;
+
+a = b	yields true, but
+a is b	yields false
+b is a	yields true
+
+In using is and isnt, it is frequently necessary to use casts to insure that their
+operators are of the "intended" modes. For instance, after:
+
+
+list b := (3, nil),
+c := (4, nil),
+d := (5, nil);
+
+next of b := next of c := d;
+
+next of b is next of a			yields false, but
+ref list(next of b) is ref list(next of c)	yields true
+next of d is nil			yields false, but
+ref list (next of d) is nil		yields true
+
+
+Here, an expression such as next of b has mode ref ref list; the two pointers which we
+wish to test for identicalness both have mode ref list. We could have gotten by with a
+cast on only one of them, instead of casting both of them as in the first of the two
+examples above.
+
+3.6.	Sequential Processing
+
+	In this section we'll look at some of the standard control structures of Algol 68,
+all  of  which  have  relatives  in  other  programming  languages.  These  include
+closed-clauses [blocks; compound expressions], choice-clauses including "if-then-else"
+and case clauses, loops including while loops and for loops, procedures, operator
+definitions, and some miscellany such as gotos and completers. The most important
+new notion here is that of the "serial clause", as explained in section 3.6.4, and the
+notion of "range structure" that goes with it.
+
+
+
+3.6.1	Procedures [Routines; Subroutines; Functions]
+
+	Every procedure returns a value; however, by specifying that the mode of the
+value returned by a procedure is void, you effectively cause Algol 68 to forget that
+the  procedure  returns  a  value.   The  distinction  between  "call-by-value",
+"call-by-reference", and the dreaded "call-by-name", familiar to users of Algol 60,
+Fortran, and many other languages, is gone, but you may redraw the distinction
+yourself: if you specify that the first parameter, x, of a procedure, is of mode int, then
+in the body of that procedure, x is an int just as if you had declared it with an
+identity-declaration; thus you cannot assign to it, just as you cannot assign to 3. If, on
+the other hand, you specify that x is to be of mode ref int, then in the body of that
+procedure, x is like an integer variable, i.e. it is a name which can refer to int values,
+and you can assign int values to it. You then cannot call the procedure and pass 3 to
+it as its first parameter, however; 3 is an int value, and cannot be coerced to be mode
+ref int. When you pass some ref int value to the procedure, say a variable called a,
+then while the procedure is executing, x and a are the same name, and assignations to
+one have the same effect as assignations to the other, i.e. both of them are made to
+refer to the same int value
+
+
+# A procedure #
+
+proc iterative factorial = (int a) int:
+begin
+	int result := 1;
+for i to a do result *:= i od;
+result
+end;
+
+# A procedure with no parameters and no result #
+
+proc greeting = void: print (("Hello", newline));
+
+# A procedure with several parameters #
+
+proc print title page = (string title, author,
+int head size, center size) void:
+begin
+to head size do print (newline) od;
+print centered (title);
+to center size do print (newline) od;
+print centered (author);
+print (newpage)
+end;
+
+# Recursion - a procedure calling itself #
+
+proc recursive factorial = (int n) int:
+if n <= 0
+then 1
+else n * recursive factorial (n -1)
+fi;
+
+
+# Procedure variables #
+
+
+proc (int) int facto;
+...
+facto :=	if phase of moon = full
+then iterative factorial
+	else recursive factorial
+fi;
+...
+print (facto (gross national product));
+...
+# Deproceduring (a coercion) - calling a procedure without parameters #
+
+...
+
+proc simulation cycle = (int die1, die2) void
+proc print results = void:
+
+to simulation length
+do
+simulation cycle (# rolling the dice: #
+1 + entier (random * 6),
+1 + entier (random * 6));
+#
+random is a proc real declared in the Standard
+Prelude, whose result is uniformly distributed in
+[0,1). Above, it is deprocedured two times.
+#
+print results
+# here print results was deprocodured. #
+od;
+
+proc real a;
+a := random;
+# here deproceduring does NOT occur. #
+
+
+
+
+3.6.2	Transput [Input-output; I/O]
+
+	Now that we've presented Procedures, we may as well present Transput, though
+it doesn't strictly belong in this section because it isn't a "control structure".
+
+	Algol programs do all transput by means of a uniform set of file-handling
+procedures.  Different kinds of external devices and pseudo-devices, such- as the
+user's terminal, the line printer, the File system, and so on, are represented as
+different predefined values of mode channel. A better and more complete description
+of the available channels can be found in Chapter 5; here we will just present a list
+of the currently available channels:
+
+stand out channel	standard output line printer
+stand in channel	standard input terminal
+cons out channel	console output (terminal)
+cons in channel		console input (terminal)
+var page channel	PAGE object channel TECO format
+fixed page channel	PAGE object channel unformatted
+sos file channel	transput to files of SOS subfile type
+
+
+	All transput is done by a set of predefined routines, each of which requires as
+its first parameter a value of mode ref file. A value of mode file corresponds to what
+is usually called a "file control block"; it is a tangible record that the program has
+initialized transput to some external file or device, and a record of the progress of
+that transput.
+
+Initialization of a file is done by means of the routines open and establish:
+
+
+file f, g;
+establish (f, "newfile", sos file channel, max int, 50, 80);
+
+#
+creates a new file, with an entry ifly your directory called
+nevifile", and initializes it for transput. It may have an
+unlimited number of pages (mar int is defined in the standard
+prelude as the largest integer that can be used in a program),
+with up to 50 lines per page, and up to 80 characters per line.
+#
+
+
+	open (g, "oldfile", sos file channel);
+
+#
+looks for an entry in your directory called "oldfile", and
+if it is a proper SOS file, initializes it for transput.
+#
+
+
+Both of these routines return values of mode int; if either one fails for some reason or
+other, it returns a non-zero value indicating why it failed.
+
+	Two predefined values of mode ref file are initialized before your program is
+started'. stand out is opened on stand out channel, and stand in is opened on stand in
+channel. We will run into these two again soon.
+
+	Ordinary output is done by means of the routines put and print:
+
+
+#	Output of a single value to a file #
+
+put (file,3);
+put (file,16r70f0);
+put (file,newline);
+
+# comes out as TTTFFFFTTTTFFFF #
+
+
+#
+(The value may be any of the modes int, real, compl,
+bool, bits, char, string, bytes, or (as in the case of newline,
+proc (ref file) void).
+#
+
+#	Output of a multiple value #
+
+[]int r2  ((2, 3), (4, 5));
+...
+put (file,r2);	# comes out as	+2	+3	+4	+5 #
+
+#	Output of a list of things #
+
+put (file, (a, b and c, r2, "gorp baz", newline));
+
+# The standard output file #
+
+print (xxx)
+	equivalent to
+put (stand out, xxx)
+
+
+
+Input is done by means of get and read. In general, input looks a lot like output:
+
+
+# Input of a single value #
+
+int i; get (file, i);
+string s; get (file, s);	#	Read and ignore the rest of the current line #
+get (file, newline);
+
+
+#	Input of multiple values, lists of values #
+
+[1:n]real x; get (file, x);
+get (file, (foo, bar, mung, gorp, x[3:n]));
+
+read (xrx)
+equivalent to
+get (stand in, xxx)
+
+
+	Three values of mode proc (ref file) void are defined in the Standard Prelude:
+space, newline, and newpage; these routines have the effects that their names suggest.
+
+	At any time during transput to a file, you can find out your distance in columns
+from the left margin, your distance in lines from the top of the page, and your page
+numberi the routines to do so are called "position enquiries".
+
+char number (ref file)	position within a line
+line number (ref file)	position within a page
+page number (ref file)	position within the file
+
+#	Example: standard tabbing #
+
+proc tab = (ref file f) void:
+put (f, (8 - char number (f) %* 8) * " ");
+
+	print ((something, tab, something else, tab, etc))
+
+
+
+	Ordinarily, if you try to do input at the end of a file, or output beyond the
+physical limits of a file, your program run is terminated (a fatal error is announced).
+You can specify different actions to be taken at these and/or other interesting
+junctures, by associating an "event routine" with the file. An event routine is a value
+of mode proc (ref file) bool; when the event happens, the routine is called, and the ref
+file value which was being used for transput is passed to it. There four predefined
+procedures which can be used for associating event routines with files; these are:
+
+on line end (file, event routine)	transput at end of line
+on page end (file, event routine)	transput at end of page
+on logical file end (file, event routine)	input at end of file
+on physical file end (file, event routine)	output at end of file
+
+For a more complete description of how event routines v'ork, and hew they should be
+written, see some other text; for examples of their use, see section 3.6.6.
+
+	If you would like to output numbers in some format different from the standard
+format used by put, there are three routines available for conversion of numbers into
+strings: whole, fixed, and float:
+
+whole (number, int)	second argument is "width"
+
+#	sample table of values of whole (num, width) '#
+
+
+
+
+
+		width
+		0	 3	-3	 4
+	0	"0"	" +0"	"  0"	"  +0"
+num	25	"25"	"+25"	" 25"	" +25"
+	-25	"-25"	"-25"	"-25"	" -25"
+
+fixed (number, int, int)	third argument is "after"
+
+# Examples: #
+
+fixed (3.1, 4, 1)		yields "43.1"
+fixed (3.1, -4, 1)		yields "3.1"
+fixed (3.1, 3,1)		yields " +3"
+fixed (3.1, -3, 1)		yields "3.1"
+fixed (3.1, 0, 1)		yields "3.1"
+fixed (-3.1, 0,1)		yields "-3.1"
+
+float (number, int, int, int)	fourth argument is "exp width"
+
+#	Examples: #
+
+float (3.1e1, 6,1, -1)		yields "+3.1e1"
+float (3.1e1, -6, 1, -1)	yields " 3.lel"
+float (3.1e1, 7, 1, 1)		yields "*3.1e+1"
+float (3.1e12, 6,1, -1)		yields "*31e11"
+float (3.1e12, 5,1, -1)		yields "+3e12"
+float (3.lel, 6, 2, 0)		yields "+3.1e1"
+
+	Finally, there are some miscellaneous transput routines, for doing various
+interesting but miscellaneous transput things:
+
+
+make term (ref file, string)
+# designates a string full of break characters for input of string values #
+
+assoctate (ref file, []char)	* NOT currently implemented #
+# like open, but initializes "transput" with an array of characters #
+
+put bin, get bin, write bin, raad bin
+# binary [unformatted; packed] transput #
+
+set	(ref file, int page, line, char)
+# random access #
+
+reset (ref file)
+#	rewind - go back to beginning of file #
+
+	close, scratch
+#	terminate transput with a file. scratch aborts transput,
+close terminates it normally. #
+
+reidf (ref file, string)
+#	rename the file #
+
+
+chan (ref file)
+# channel enquiry #
+
+
+3.6.3	Operator definitions
+
+	In Algol 68 you may define new operators. You can do this by adding new
+meaning to the existing operators, such as + and abs; or you can define entirely new
+operators. In the latter case, if the new operator is dyadic (requires two operands), it
+is necessary to define its priority. Priority is the old notion which you know from
+algebra, that exponontiation takes place before multiplication and division, and
+multiplication and division take place before addition and subtraction. You must find a
+place for your new operator on this scale; the existing operators all have priorities
+on a scale from 1 to 9.  Operator declarations, whether for dyadic or monadic
+operators, look a great deal like procedure declarations.
+
+
+#	Extensions to already defined operators #
+
+op - = (bits a, b) bits: a and not b;
+
+op ^ =  (int a) real: 10.0 ^ a;
+
+# Illegal: #
+
+op - = (int a, b) anymode: anything;
+	#	illegal to redefine an operator without extending it #
+op + = (ref int a, b) anymode: anything;
+	#	redefining it without extending it "enough" #
+
+# Definitions of new operators #
+
+prio xor = 4;
+op xor  (bits a, b) bits: a and not b or b and not a;
+
+op flip = (ref bool b) ref bool: b := not b;
+
+#	More interesting operators and structures #
+
+mode rational = struct (int gum, denom);
+
+op gcd = (int a, b) int: e you can fill this one in #;
+
+op * = (rational a, b) rational:
+begin
+int na = num of a, nb = num of b;
+int da = denom of a, db = denom of b;
+int i = na gcd db, j = nb gcd da;
+((na % i) * (nb % j), (da % j) * (db % i))
+end;
+
+
+
+3.6.4	Serial Clauses
+
+	If you have used Algol 60 or other languages based on it, you will recognize the
+Algol 68 construct "closed-clause". This is a sequence of declarations and expressions
+separated by semicolons, beginning with begin and ending with end. It is generalized
+in some minor ways from analogous constructs in other languages: declarations may
+appear after expressions in the sequence; the clause as a whole is an expression, and
+itS- value and mode are the value and mode of the last item in the sequence, which
+must be an expression; begin and end may be replaced by left and right parentheses.
+
+	Closed-clauses, however, do not appear very often in Algol 68 programs. This
+is - because the purpose served by begin and ond, namely to signal to the Algol 68
+system where the clause begins and ends, may be served equally well by many other
+ pairs of landmarks, e.g. if and then, or then and else, or else and fi, or do and od. Thus
+the following expressions are legal (we will examine them in more detail in later
+sections):
+
+
+if a; b; c; d
+then e; f; g; h
+else i; j; k; l
+fi
+
+for i from a by b to c
+while d; c; f; g
+do h; i; j; k
+od
+
+The closed-clause is just a particular example of a "serial-clause", which is a sequence
+of expressions and declarations separated by semicolons. A common mistake is to put
+a semicolon after the last item in a serial-clause; see section 3.9.
+
+	The rules governing the extent of declarations in Algol 68 are also slightly
+different from the corresponding rules in Algol 60 and related languages. Of course, a
+declaration in -any serial-clause takes effect over the whole serial-clause, though it
+may be overridden by declarations in clauses nested within that one.  However, a
+declaration in the clause between if and thon takes effect over the whole expression
+from if to fi; and a declaration in the clause between while and do takes effect over
+that clause and the clause betwe4n do and od. Examples of this rule and its usefulness
+will be presented in the following sections.
+
+
+3.6.5	Conditional Clauses
+
+	In Algol 68, the if-then-else construct is a type of expressiori~ Its value is either
+the value of the then-part or the value of the else-part, whichever is executed; its
+mode is some compromise between their two modes, arrived at by "balancing" them.
+We will not describe balancing here, but you should know the term.  The clause
+between if and then is called an enquiry-clause, and it must of course be of mode bool.
+
+	The whole expression must be terminated by the fi. olif may be used as an
+abbreviation for else if, but it is more than just an abbreviation: whereas the if in else
+if must be matched by a fi, the use of elif eliminates the need for one fi. (If this is
+unclear, see the examples below.) The else-part of a conditional clause may be omitted,
+in which case it is treated as if you had written else skip. skip is a special predefined
+expression: it does nothing, and its value is undefined (and can be coerced to any
+mode). It is useful in situations where the rules of the language force you to write an
+expression, but your program has no need of any particular expression.
+
+	if, then, else, elif, and fi may be replaced by (, |, |, |:, and ) respectively, in any
+particular conditional clause, provided you replace all of them.
+
+
+#	A simple conditional clause #
+
+if a then b := c else d := e fi
+
+#	Omitted else #
+
+if a then b := c fi
+equivalent to
+if a then b := c else skip fi
+
+# Use of elif #
+
+i := j * if a
+	then b + C
+elif d
+then e + f
+else g + h
+fi
+	equivalent to
+i := j * if a
+then b + c
+else if d
+	then e + f
+	else g + h
+fi
+fi
+
+# Abbreviations #
+
+
+b :=
+(a | b := c | d := e)
+
+(a | b := e)
+
+(a
+| b + c
+|: d
++ e + f
+| g + h)
+
+# Serial clauses and declaration structure #
+
+if
+int i = f(a, b);
+i /= 0
+then
+j := g (c, i)
+else
+real r = h (d, e);
+k := p (i, r);
+m := round r - 5
+fi
+
+
+3.6.6	Loop Clauses
+
+	The keywords do and od always indicate a loop of some kind. In loops involving
+the keyword while, e.g.
+
+
+while a do b od
+
+
+there is a cycle of action: first the enquiry-clause a is tested, and if its value is true,
+the serial-clause b is executed; this happens over and over again until the value of a is
+false, at which time the cycle just stops. The whole loop is an expression, but its value
+is of mode void (see section 3.6.1), and is thus of no use to the programmer.
+
+In loops involving the keywords for, from, by, and/or to, e.g.
+
+for counter from a by b to c do d od
+
+the cycle is different. This expression implicitly declares an int value called counter;
+this declaration is in effect over the serial-clause d, though it may be overridden by
+declarations within that clause. cocinter is a different int value every time through the
+cycle: the first time it is equal to a, the second time it is a + b, the third time a + b + b,
+and so forth. The loop stops if, in the coming cycle, counter would exceed its limit. If
+b is positive this means that counter is not allowed to be greater than c, if b is
+negative, cot£ntcr is not allowed to be less than 4. As with while loops, this may mean
+that d is never executed. Note that a, b, and c are calculated once and only once, at
+the beginning of the whole loop; they are not affected by later assignations, which may
+take place during the loop, to variables which were involved in calculating them.
+
+	The for part could have been omitted, if counter were not mentioned at any time
+within d. The from part could be omitted, in which case it is treated as if it were equal
+to 3. The same goes for the by part. If the to part is omitted, there is no limit on the
+execution of the cycle. A single loop can use both a counter (e.g. with for et al.) and a
+while part; in this case both conditions are checked to determine whether the cycle is
+to continue.
+
+	In case the above discussion has not sufficiently confused you, here are some
+examples of loops:
+
+
+#	An infinite loop #
+
+do
+sunrise;
+day;
+sunset;
+night
+od
+
+#	A simple loop #
+
+to n do print (newline) od
+
+# Use of for, from, by #
+
+for i from 10 by -3 to -35
+do f(i)od
+
+#	Use of while #
+
+for i to 100 while f(i) <0
+do g (i) od
+
+# Interacting with a user at a terminal #
+
+while
+string s;
+reed ((s, newline));
+	s /= ""	# the empty string #
+do
+file f;
+if
+int i = open (f, s, some channel);
+i = 0
+then
+process (f);
+close (f)
+else
+report error (i)
+fi
+od
+
+#
+Converting an integer to a string in some arbitrary base.
+	The string must contain at least one digit, even if the
+number is zero. The base must be from 2 to 10.
+#
+string string := "";
+char sign = (number < 0
+| number := -number;
+"-"
+| "+" );
+
+while
+char digit = "0123456789" [number %* base + 1];
+number %:= base;
+digit +=: string;
+number /= 0
+do
+skip
+od;
+sign +=: string
+
+
+
+
+3.6.7	Case Clauses [Switches; Computed Gotos)
+
+	It is hard to understand the effect of a case-clause unless you have actually
+been near one:
+
+case i in
+# 1 # f(r),
+# 2 # g(s),
+# 3 # skip,
+# 4 # h :=  j + k
+out x
+esac
+
+
+	The enquiry-clause i is evaluated. It must be of mode int. If its value is less
+than 1 or greater than 4, then the serial-clause x is evaluated. If the value of i is in
+that range, however, one of the four following expressions, which we have used
+comments to label approprialely, is evaluated. For instance, if the value of i is 2, g(s)
+is evaluated. In any case, the value of the case-clause is the value of whichever of
+the alternatives is evaluated.
+
+	A peculiar construct, ouse, plays a role similar to elif: if the value of i does not
+lie within some range, you can use it to select in some other range, or even use some
+other enquiry-clause, if you are so inclined.
+
+
+#	A simple case-clause #
+
+case
+a;
+b
+in
+	# 1 # c,
+	# 2 # d,
+	# 3 # e,
+	# 4 # f
+out
+g;
+h
+esac
+
+#	Use of ouse #
+
+case a in b, c, d
+ouse a - 100 in e, f, g
+euse a - 200 in h, i, j, k, m
+out n; o esac
+
+#	Omitted out #
+
+case a in b, c, d esac
+equivalent to
+Case a in b, c, d out skip esac
+
+# Abbreviations #
+
+print ((name of who, " is ",
+	(number of forks of who | "hungry.", "eating."
+		| "thinking."),	newline))
+
+
+
+
+3.6.8	Miscellaneous control structures
+
+	In this category are included gotos, labels, and completers. You may affix a label
+to any expression in a serial-clause, provided it is after all the declarations in that
+clause; then a geto which addresses that label may occur anywhere within the clause
+or in procedures declared within the clause, and it causes the evaluation of the
+expression of which it is a part to be immediately dropped; the system starts executing
+the labeled expression in the serial-clause as if it had gotten there normally.  An
+enquiry-clause may not contain a label.  Labels and gotos, owing to their highly
+general, all-purpose nature, are rather clumsy to use; but in some situations they are
+the standard method of choice, as in this example:
+
+
+#	Use of a goto to handle end-of-file #
+
+#	This program copies one file to another, line by line #
+
+file input file, output file;
+string s;
+open (input file, input name, input channel);
+open (output file, output name, output channel);
+on logical file end (input file,
+	(ref file) bool: go to end of file);
+on page end (input file,
+	(ref file) bool: (put (output file, newpage);
+false));
+do
+get (input file, (5, newline));
+put (output file, (s, newline))
+od;
+end of file:	#	this is a label #
+close (input file);
+close (output file);
+
+
+
+
+	Completers may remind you of control constructs that you have seen in other
+languages, but they aren't like anything else, anywhere, really. Any expression (but
+the last) in a serial-clause may be separated from the next expression or declaration
+by exit, instead of the usual semicolon. This causes that expression, if and when it is
+executed, to bring the serial-clause to an end, and to be the value of the serial-clause.
+This feature can only be used in conjunction with gotos and labels; for instance, if the
+expression after exit is not labeled, it can never be executed (in fact this is an error,
+and is caught by the Algol 68 compiler as such). We do not claim that the following
+example of the use of a completer represents good programming practice, but it is
+plausible and will serve the purpose:
+
+
+#
+This program fragment reads an array, and takes the average value
+of its elements. All the elements must be positive; when a negative
+number is read, it is taken to be the end of the array. A row of
+real numbers is appointed to hold the array; and if the entire row is
+read without encountering a negatyp element, it is reported that there
+were too many elements to handle
+#
+[1:100]real x1;
+real s := 0;
+begin
+read (x1);
+for i to upb x1
+do if x1 [i] > 0
+then s +:=-x1 [i]; j := i
+	else goto nonpos
+fi od;
+
+print ("Too much input") exit
+nonpos: print (s);
+average := s / j
+end
+
+
+3.7.
+Parallel Processing
+
+	The CMU Algol 68 system allows you to specify that your program is to be run
+on more than one HYDRA process; see section 4.2.4. In order to take advantage of
+this, you must be able to write your program in such a way that more than one
+Process will find something to do.  There are essentially two features to use:
+parallel-clauses, and eventual values. We will describe these in the next two sections.
+
+
+3.7.1	Parallel Clauses and Semaphores
+
+	A parallel-clause is a sequence of expressions, separated by commas, beginning
+with par begin and ending with end. (You can use parentheses instead of begin and
+end). The expressions are evaluated "in parallel", and when they have all completed,
+the parallel-clause itself is complete; its value is of mode void, and is of no
+consequence.
+
+	What does it mean that the expressions are evaluated "in parallel"? Well, if you
+have requested at least one HYDRA process for each expression, and if HYDRA-PM1
+can find at least one PDP-11 processor for each process, the expressions may just be
+evaluated all at the same time. If not, at any rate they may be evaluated in any order,
+and may interrupt each other at random; so you won't be able to tell, in any sure way,
+whether or not they were actually evaluated at the same time.
+
+	Suppose two (or more) of the expressions read and write the same variable, or
+meddle with the same large data structure?  How can you insure that the data
+structure is always self-consistent; that the several processes do not confuse each
+other by getting into improperly tangled sequences of assignations and dereferencings
+of the variable? The usual and best method of preventing problems of this sort is by
+the use of "semaphores".  For a real discussion of this problem, which is called
+"synchronization", you should read something less hasty than this tutorial. A summary
+of the simplest and most usual use of semaphores is as follows: for each variable, or
+data structure, or group of variables, etc., that must be internally consistent, appoint a
+semaphore--a value of mode sema. Initialize this sema to level 1; the "1" indicates that
+only one process is to touch the data grouping at a time. Suppose the sema value is
+called mysema; then any process, before touching the data, is to execute:
+
+
+down mysema	# down is a predefined operator *#
+
+and when it is finished messing with the data, it should release its grip thereon, by
+doing:
+
+
+up mysema
+
+
+
+	Here is a classic if somewhat trivial example of the use of parallel-clauses and
+semaphores as described above:
+
+
+sema mouth = level 1;
+par
+begin
+do
+	down mouth;
+eat;
+up mouth
+od,
+do
+	down mouth;
+speak;
+up mouth
+ed
+end
+
+
+
+Watch this space--conditional semaphores will some day be implemented.
+
+3.7.2	Eventual Values
+
+	Parallel-clauses have several disadvantages. First, the fork and join points must
+be nested not only with respect to other parallel-clauses, but also with respect to the
+routine and range structure of the program. This can be undesirable if an activity to
+be started in parallel does not interact with the further elaboration of other activities.
+A particular irritation is that it is not possible to start an activity within a routine and
+have it complete after the routine. Second, since the piece of program which may be
+initiated in parallel is a void unit, a parallel activity may not return a value except
+through the use of global variables. The possibility for programmer error is increased
+because other parallel activities may access these variables.  Alternatively, the
+programmer may decide to use parallelism only for subprograms which return no
+values.  This has the unfortunate consequence of reducing the amount of parallel
+processing. Finally, synchronization within the parallel-clause scheme is accomplished
+by scattering up and down operations throughout the program. This decentralization of
+control can be as difficult for programmers to deal with as the unrestricted use of the
+goto.
+
+	The idea behind eventual values may be seen by considering the following piece
+of program:
+
+
+real x, y;
+x := sin (3.2);
+unit1 .... ; unitn;
+y := x + 1.0
+
+
+When more than one processor is available it would make sense to allow sin (3.2) to be
+computed in parallel with the elaboration of the first assignation and the units Unit1,
+..., UnitN. In this case the value assigned to x can not be the desired real value since
+it is not necessarily available at the time of the assignation. The value assigned is one
+which will eventually (when the call completes) be a real value. We call this kind of
+value an eventual real value. When the second assignation is reached it is necessary
+to produce a real value from the eventual real value; that is, the program must wait for
+the call of sin to complete. These ideas are incorporated into the language by formally
+defining an eventual value to be a new object, and by introducing two new coercion
+actions, deeventing and eventing.
+
+	The mode of an eventual value is event amode, where amode is any mode. An
+event amode value is composed of a status, which is either complete or incomplete, and
+an amode value.
+
+	An event amode value may be "deevented" to an amode value much as a proc
+amode value may be deprocedured to an amode value. In fact, deeventing may occur in
+the same syntactic positions as deproceduring. Deeventing is used to wait for the
+amode value to be computed.  Specifically, if an event amode value has a status of
+complete, then its amode value is yielded by deeventing. If the status is incomplete,
+deeventing causes the current activity to be halted until the status changes to
+complete. Then the activity is resumed and the amode value is yielded.
+
+	An amode value may be "evented" to an event amode value. This coercion may
+occur in firm and strong syntactic positions. if the construct to be evented is a call or
+formula which returns an amode value then the routine is invoked as a parallel activity
+and the yield of eventing is an event amode value with incomplete status. For other
+constructs the yield is an event amode value which is complete and has the amode
+value associated with it.
+
+The previous example may be written as follows:
+
+event real x; real y;
+x := sin (3.2);
+unit1 ; ... ; unitn;
+y := x + 1.0
+
+
+The mode of x is ref event real. The call of sin occurs in a strong event real context.
+The mode of sin is proc (real) real, so it is evented by initiating a parallel activity and
+yielding an incomplete event real which is assigned to x. When x is used as a real
+operand it is dereferenced and deevented. The deeventing waits, if necessary, for the
+parallel activity to complete and return the real value which is needed.
+
+	Another useful application of eventual values is to start the parallel elaboration
+of an independent action. For example,
+
+
+mode task  event void;
+...
+task (print ((a, b, c)));
+...
+
+
+The cast puts the call to print in a strong event void context, so the call is made in
+parallel.  The program never waits for the completion because no deeventing ever
+occurs. Remember, the cast is a comorf and is voided directly. If it were necessary to
+wait for the completion, the following could be written:
+
+
+task x;
+x := print ((a, b, c));
+
+x; co wait co
+
+
+The applied identifier, x, is not voided directly, so deeventing occurs and causes a
+wait.
+
+	By now the reader can understand and appreciate the beauty oF this final
+example:
+
+
+op + = (event [,] real a,b) [,] real: ... co usual matrix add co;
+op * = (event [,] real a,b) [,] real: ... co usual matrix multiply co;
+[1:10,1:10] real a, b, c, d, x;
+
+x	:= a*b + c*d
+
+3.3.  Instrumentation & Debugging Aids
+
+
+
+3.3.1	On Error
+
+on error - code(proc(int,int,bits)bool)void
+
+Example:
+
+
+on error ((int modno, lineno, bits errno) bool:
+if errno shr 6 = bin 3
+#
+3 means a division-by-zero error. For a
+table of error message numbers, see the
+attached pages.
+#
+then write bin (some file,
+(modno, lineno, errno));
+try to restart
+else false
+fi)
+
+
+	On error allows you to designate an "error recovery routine". When a run-time
+error is detected, the system checks to see if you have an error recovery routine, and
+if so, calls it. The routine must be of mode proc(int,int,bits)bool. The three parameters
+are, in order:
+
+
+(1)	A module number. These aren't very meaningful at present, but eventually a
+procedure will become available which converts such a number into a
+meaningful string, which will tell you something about which module
+(collection of procedures, modes, etc.) was executing when the error
+occurred.
+
+(2)	A line number. This refers to the source listing produced by the compiler,
+and indicates (usually accurately) which code was executing when the error
+occurred.
+
+(3)	An error number. This is an indicator of exactly which error was detected.
+This bit pattern is derived from two other patterns:
+
+(a) An indicator of a general class of errors; we'll call this c.
+
+(to) An indicator of which error within the class occurred; we'll call this d.
+
+The error number is equal to (c shl 6) or d. Of course, the number can be
+converted to an int value, and the separate patterns can be obtained by
+appropriate use of the (integer) division and modulo operators, if that is
+more convenient than the use of the bits operators for any reason. A table
+of possible values of c and d, and their meanings, is attached.
+
+	If the error recovery routine returns true, the current activity is killed; this is
+further explained in the documentation of parallel processing features, but in general it
+means that the program quietly comes to a stop.  If the routine returns false, the
+standard error message sequence is printed at the user's terminal, and then the
+current activity is killed.  Thus the default option, which is that there is no error
+recovery routine, is equivalent to designating a routine which does nothing but returns
+false.
+
+	on error (skip) may be used to specify that there is no error recovery routine,
+i.e. to restore the default situation. Note that the error recovery situation follows the
+range structure of the program: no matter how many calls of on error occur during the
+elaboration of a range, the error recovery routine at exit from the range is restored to
+what it was at entry.
+
+
+
+3.8.2	On Tick
+
+on tick - code(proc(int,int)void)void
+
+Example:
+
+
+on tick ((int modno, lineno) void:
+linechart [lineno] +:= 1)
+
+
+	on tick allows you to designate a "line number change routine". At any time
+during the execution of a program, there is a record in the system of what source
+code is being executed. This record consists of two numbers, a "module number" and a
+"line number", as explained under on error, above. These are updated at the following
+points:
+
+(1)	when a semicolon is passed
+(2)	when a routine-text is entered
+(3)	when a label is jumped to
+(4)	when a do-part is entered
+
+	If a line number change routine has been designated, it is called after this
+updating is done; the module number and line number are passed to it as parameters.
+on tick (skip) may be used to specify that no routine is to be called (this is the
+default); also, the line number change situation, like the error recovery situation
+described above, follows the range structure of the program.
+
+
+3.8.3	Warning level
+
+warning level - code(int)void
+
+Example:
+
+
+warning level (2)
+
+
+	Some run-time errors are not always severe ereugh to justify bringing the
+program run to a stop.  A cardinal example of this kind of error is floatine, point
+underfiow, in which the result of some floating p6int coteputation is so close to zero
+that the difference cannot be represented in the computer's standard floating point
+format.  In some situations, setting the result to zero might be a perfectly adequate
+way to continue. In other situations, the programmer might want this to be done, but
+might also want to be notified that it was done; in yet other situations, it might be best
+to bring the program to a stop, as with an unrecoverable error.
+
+	The CMU Algol68 system can treat such non-severe errors, called "warnings" in
+any of four different ways, depend;ng on the setting of an internal flag:
+
+0	- silently take the standard recovery action
+
+1 -	while recovering, print "WARNING  nnnnn" on the user's terminal,
+where nnnnn is an error number (see the discussion of error numbers,
+above).
+
+2 -	while recovering, print an entire standard error message, as if a
+severe error had occurred, except with "WARNING nnnnn" substituted
+for "ERROR nnnnn"
+
+3 - treat the warning exactly as if it had been a severe error.
+
+	Warning level takes an integer argument, and uses it to set the internal flag.
+Values less than 0 are treated as 0; values greater than 3 are treated as 3. The
+default setting of the flag is 2.
+
+
+
+3.8.4	Systrace
+
+systrace - code(int,bits)void
+
+Example:
+
+systrace (2, 8r10)
+
+	systrace is intended for use primarily by the implementors, or other persons
+wishing to explore the run-time system who have some knowledge of its internal
+structure. However, a few of its features are of interest to general users:
+
+systrace (2, n)
+
+sets the "debug flags" to n; the following bits are of interest:
+
+octal value meaning
+
+20	record line number changes at user's terminal
+40	record routine entry & exit at user's terminal
+1000	record scheduling actions at user's terminal
+
+
+A more detailed description will be given in the future.
+
+
+
+3.8.5	Process time clock
+
+proctime - newpile
+start proc time - code void
+get proc time - code(ref proctime)void
+musecs - code(proctime)real
+
+Example:
+
+
+ref proctime p = loc proctime;
+start proc time;
+grunge; grunge; grunge;
+get proctime (p);
+print (("Time taken was", musecs (p); " microseconds", newline));
+
+
+
+	This mode and set of operations make available to the Algol 68 programmer the
+most accurate external  clock usable under HYDRA,  the $Processtime clock.  As
+described in the HYDRA reference manual, this records the time spent by the current
+process executing; its reselution is 16 microseconds, and at this writing it is not turned
+off when the processor on which the process is running is interrupted.
+
+	Readings of this clock are meaningful only relative to each other. Therefore, our
+system creates a "virtual clock", which creates proctime values by subtracting
+$Processtime readings from one another, and returns them to the program. The basic
+primitive operation on the virtual clock, get proc time, is to stop it, read its value, reset
+it to zero, and start it. One may optionally not bother to read its value (start proc
+time). These are implemented by a system which keeps one global internal "variable":
+the result of the last call on $Processtime.  get proc time causes two calls on
+$Processtime: the first one is done at the very beginning of the operation, and the
+second one at the very end. The difference between the result of the first call and
+the value of the "global variable" is assigned to the ref proctime argument; the result
+of the second call is left in the "global variable".
+	The reason for having two calls on $Processtime per primitive operation, rather
+than just one, has to do with the accuracy of the values returned by the virtual clock.
+Before assigning a proctime value, the system subtracts a small amount from it, to
+correct for the overheads involved in invoking the HYDRA Kernel, invoking the
+operation itself, and other miscellaneous things. It is desirable to keep this correction
+as nearly constant as possible.  Getting storage for a new proctime value, and
+assigning it to a ref proctime value, both involve calls on the dynamic storage allocator
+and deallocator, and should therefore be excluded as major causes of unpredictability
+in the calculation of overhead costs. Hence they are performed in the untimed interval
+betyteen the two calls on $Processtime.
+
+	There is another source of unpredictability in the cost of invoking the basic
+operation, which we cannot squeeze out, but which the user can control by the
+scrupulous application of certain programming conventions in the use of the Process
+time operations. This is the time required to get a "total reference" to pass to get
+proc time as its argument; under certain conditions this also involves invoking the
+dynamic storage allocator
+
+	What this means to the user is this: that for best results, the ref proctime
+argument to a call on get proc tinme must have been one that was explicitly declared
+(not, for instance, one that was sliced from a ref []proctime array); and furthermore, for
+the present anyway (this may be fixed in future versions of the system), it should
+have been declared by an uncontracted form of declaration, e.g.
+
+
+ref proctime p = loc proctime;
+
+rather than by the more usual form:
+
+
+proctime p;
+
+
+	More detailed explanations of the reasons for these restrictions are available
+from the implementors. For now, take them on faith.
+
+	The routine musecs serves to convert proctime values into a more easily
+manipulable form, i.e. into real values. In the future, if and when operations on long int
+values are implemented, a version of this function will be provided which converts to
+long int rather than to real. Also, routines which do arithmetic directly on proctime
+values may be implemented.
+
+
+3.9.	Dealing with the Compiler's Error Messages
+
+	This section is intended to be a guide to interpreting the sometimes mystifying
+error messages or sequences of error messages which the compiler types at your
+terminal when it detects something wrong with your program. The need for such a
+section is a reflection of a rather sad situation: the messages themselves are not
+always understandable to the novice user; they are sometimes too vague and
+sometimes so specific as to be misleading; sometimes all messages after the first one
+are spurious; and sometimes many errors after the first one are just overlooked. This
+state of affairs is about average for compilers of typical high-level languages; in
+general implementors have their hands full dealing with correct programs, and
+consequently neglect the treatment of incorrect programs.
+
+	First, learn the format of the error messages, and how to read what the compiler
+is trying to tell you. See section 4.2.5. Bear in mind that the "position indicator" digit
+showing what the compiler was reading when it discovered your error is late: it almost
+always occurs one or two words after the point where the error is.
+
+	Now, let's examine the symptoms of some typical mistakes, so you can learn to
+recognize them.
+
+1.	"Syntax error" This is the compiler's catch-all message: when it can't figure out
+what you did wrong, it prints this. It usually means that you have an extra
+semicolon: you put a semicolon after the last expression in a serial-clause. It may
+mean something else, but it Very seldom does.
+
+2.	"Applied identifier has no defining occurrence in current nest". This is Algol 68
+jargon that says the compiler has encountered an undeclared identifier. You may
+have misspelled an identifier, or you may have simply forgotten to declare it. Or,
+you may have typed a keyword as if it were an identifier; for instance, in "upper"
+convention you forgot and typed "real" in lower case letters.
+
+3.	"Problem in serial-clause". The position indicator for this error usually occurs
+near an end; it indicates that you have forgotten an od (in a loop) or a fi (in a
+conditional-clause) somewhere earlier in the program.
+
+4.	"Missing stick". Yes, "Missing stick". A stick is the abbreviation for then and else,
+that is, "|". This error message usually indicates that you have forgotten a right
+parenthesis; the cause of the message is that the compiler expected the left
+parenthesis to be the beginning of a conditional clause.
+
+5.	Real havoc. If you forget the closing delimiter which marks the end of a comment,
+the compiler mistakes comment text for program text and vice versa, with wild
+and sometimes hilarious results.
+
+	By and large, if you make note of the frequent cases described above, and if
+you pay attention to the position indicators and the error messages, and apply only a
+modest amount of ingenuity, you should be able to figure out what your error
+messages indicate and what to do about them, without much trouble.
+
+4.	C.mmp Algol 68 System
+
+4.1.	Overview
+
+	The initial Algol 68 system on C.mmp accepts a PAGE, UNIVERSAL of PAGEs, or
+SUPER FILE as input, compiles this source text and invokes the run-time system which
+executes the program.  Eventually this compile-and-go system will give way to a
+compile-link-and-go system which supports separate compilation and program libraries.
+
+
+4.2.	Using the System
+
+	The Policy Module 0/Hydra/C.mmp system has much in common with the "Turing
+Tarpit" where everything is possible and nothing is easy. The terminal user interface,
+called the Command Interpreter (CI), allows each user to tailor the interface to conform
+to the particular user's deep-sealed beliefs and light-hearted whims concerning
+terminal interlacing.  Some important features which support this flexibility are the
+macro and procedure (called COMMAND object) definition facilities of the command
+language, a general directed-graph directory structure, automatic invocation of a user
+profile (a designated COMMAND) at login time, and, in general, the ability to do
+anything in any of hundreds of ways.
+
+	In order to spare Algol users some of the pain normally encountered when
+setting out to use Hydra, a set of COMMANDs and macros, as well as a simple profile
+have been developed.  The following subsection describes how to get started on
+C.mmp using these aids. The next subsection is aimed at the experienced Hydra user
+and  describes, in Hydra-ese, the primitives available to anyone operating in
+I-roll-my-own mode.
+
+
+4.2.1	How to do It (for beginning Hydra users)
+
+Obtaining an account. If you do not have an account on Hydra, a request for one should
+be made to the operations staff. This normally means sending mail to GRIPE on one of
+the PDP-10's.
+
+Logging in. After giving the front-end the command to connect your terminal to C.mmp,
+one of four things may happen. One, you may be told the host is down. Try again
+later.  Two, some introductory messages may be typed, followed by the prompt
+character "@". Good. You are communicating with the Job Monitor (JMON) and may
+proceed (see below). Three, some message is typed, followed by the prompt character
+">". Bad. You are probably communicating with someone else's terminal. Find another
+terminal. Four, something else happens. You are on your own.
+
+Assuming you have made it to the prompt, type: CL. Some chatter will appear on your
+terminal and eventually it will get back to a new prompt, ">".  Now you are
+communicating with the Cl; type: LOG(). The togin dialogue will be self-explanatory. If
+your user catalogue contains a COMMAND in an entry with the name Profile, this
+COMMAND is invoked as the final step of the login process
+
+Creating a profile. PMO is nearly unusable without an appropriate user profile. If you
+do  not  have  a  profile,  create  one  by  typing  the  following  supplication:
+&sysdirectory.Public.Algol68.CMDs.GetProfile(). The resulting profile contains macros
+which help implement the commands described in the remainder of this section.
+
+Preparing, source input using SOS. A version of the SOS editor exists under PMO. The
+PDP-10 SOS Manual serves as the user manual for the PMO editor. However, only a
+subset of PDP-10 SOS is available. In particular, the Copy, Transfer, Find, Substitute
+and Justify commands are not implemented.
+
+A new file tray be created and edited using SOS by typing: Create(). You will be
+prompted for a file name. Your reply should be a name of one to sixteen letters
+and/or digits. (Other characters may be used, but some are rather dangerous.) SOS
+starts in insert mode.
+
+An old file may be edited using SOS by typing: Edit(). Your reply to the prompt for a
+file should be the name given when you created the file or a null reply (i.e. carriage
+return) in which case the file most recently edited or compiled will be used.
+
+SOS may be used to examine a file in read-only mode by typing: Read().
+
+Additional information about PMO SOS may be found in the file SOSC.DOC[A110LC00]
+on the PDP-10A. This information is of little use to a beginner. Problems with and
+complaints about the PMO editor should be sent via MAIL to A110LC00 on the PDP-10.
+
+Preparing source input using TECO. A version of the TECO editor exists under PMO. It
+is roughly a subset of its namesake on the PDP-10. A new file may be created and
+edited using TECO by typing: Make(). The prompt for a file name should be answered
+with a name consisting of one to sixteen letters and/or digits. An old file may be
+edited by typing: Teco(). You will be prompted for a file name.  A null response
+causes the last file edited or compiled to be used.
+
+Specifying files and file names. If you have created any programs using SOS or TECO,
+your catalogue now has an entry called Algol. This is itself a catalogue, and there is
+an entry in it for every program you create. When you use one of the standard
+commands, such as "Edit" or "Teco", and it prompts you for a file name, it looks up that
+file name in your Algol catalogue. If you want to deal with a file that isn't in your
+Algol catalogue, you can do that, too; the only requirement is that you specify
+completely, using the conventions of the CI, how to access the file. For instance, if
+your user catalogue has an entry called Test, and Test is a catalogue with an entry
+called Prog which is your program, then when "Edit" or "Teco" or whatever prompts
+you for a file name, you should type: Test.Prog. If your program isn't even on a
+catalogue, but is in a "Capability variable" called &prog, then you should type: &prog.
+
+You can bypass the prompt by passing the proper indication of your prpgram directly
+to the command, as a parameter. For instance, you might type:
+Edit(Algol.prog)
+	! Equivalent to:
+	! Edit()
+	! Source file: prog
+Edit(Test.prog)
+	! Equivalent to:
+	! Edit()
+	! Source file: test.prog
+Edit(&prog)
+	! Equivalent to:
+	! Edit()
+	! Source file: &prog
+
+Notice that these commands "remember" what the last file you edited, ran, etc. was.
+That is, if you respond to the prompt by not typing anything but carriage return, it is
+as if you typed the name of the last file you edited or ran. The commands do this by
+maintaining a "Capability variable" called &currentfile. At any given time, this variable
+is set to the file currently in use, or the last file that was in use. Ordinarily you don't
+need to know this, but for the curious, that's how it's done.
+
+Every catalogue entry (indeed every object in the Hydra system) has a type. Files
+created by SOS (Create()) are of type SUPERFILE; files created by TECO (Make()) are
+of type UNIVERSAL You'll notice that the type of each file is printed out when you
+get a catalogue listing (see below) of all your files. SUPERFILES cannot be edited with
+TECO, and UNIVERSALs cannot be edited with SOS, in case you were wondering.
+
+Compiling and executing a program. First, type: Alg68(). The following prompt will be
+typed:
+
+Source Input:
+
+The response should be the name of the file to be compiled and executed. The dialog
+continues with the prompt
+
+Listing Device:
+
+This is the first of several "option prompts" which are part of the standard dialog. For
+each option prompt, there is a set of possible replies, and if you forget any of these,
+you can have the system type out the whole set, by replying with "?". Any reply may
+be abbreviated to only its first few characters, enough to distinguish it from all other
+replies in the set. A reply must be followed by a carriage return.
+
+Currently there is only one possible reply to the 'Listing Device' option prompt. This
+is "TTY", indicating that a compilation listing is to be typed at the user's terminal. A
+null reply (i.e. a bare carriage return) indicates that the listing is to be suppressed. In
+the future; more replies (e.g. "LPT") will be available.
+
+Next, there is another option prompt:
+
+Compiler Option:
+
+This prompt is repeated after each reply, until the user types a null reply (carriage
+return). A list of the available replies may be found in Section 4.2.3. After the null
+reply to this prompt, the compilation begins.
+
+
+When the compilation is complete, a message starting the program's code and data sizes
+(in number of words) is typed on the terminal. If no compilation errors occurred, the
+run-time systdm is called. First, however, there is another option prompt:
+
+
+Runtime Option:
+
+Like the previous option prompt, this one is repeated after each reply, until the user
+types a null reply. A tist of the available replid~ may be found in Section 4.2.4.  One
+of the replies is special: 'STANDOUT´. This brings on the 'Standout Option' option
+prompt, by which means the user specifies what is to be the nature of the
+standoutchannel, the channel on which the standard output file is opened.  The
+available replies are:
+
+LIST	It is a file of the LPT subfile type, which is listed as soon as it is closed.
+TYPE	It is the same as Consoutchannel, the channel for output to the user's terminal.
+SAVE	It is a file of the SOS subfile typo. More about this later; this is the default.
+DELETE	Not implemented yet.
+
+The run-time system then greets the user with some reassuring message and
+commences program execution.  After the program finishes, another reassuring
+message appears at the terminal indicating that execution is complete. If the user has
+earlier specified the 'SAVE' Standout option (or has not specified an option--this is the
+default), the accumulated output from the program using standoutchannel is now
+available as a file of the SOS subfile type, and the system gives the 'Final Standout
+Option' option prompt. You may specify that the file be typed on your terminal, listed
+on the line printer, saved in your user catalogue under the name 'Standout', or thrown
+away (it is biodegradable).
+
+If you run a program more than once without editing it, you can shorten the
+compilation-execution sequence considerably, by avoiding more than one compilation.
+To do this, first type: Com68(). You should do this whenever you have done some
+editing and are ready to try out the program again. This runs the Compiler, which
+produces an Object Program from your program. If you have a subcatalogue called
+Object on your user catalogue, the Object Program will be put there; otherwise a new
+subcatalogue called Object will be created.  To actually run this program, type:
+Run68().
+
+Terminating Algol 68. If your program gets into an infinite loop, or some other mishap
+befalls it, press the BREAK key (Control-K). Ordinarily, this will cause the program to
+be interrupted and forcibly stopped. You can also interrupt the compiler this way, if
+you want to.
+
+Listing a file. Type: List(). You will be prompted for a file name, and for a print name,
+which is the name that gets printed on the banner page of the listing.
+
+Printing a file. Type; Print(), You will be prompted for a file name. The contents of the
+file will appear as if by magic at your terminal.
+
+Printing a catalogue. To see your user catalogue, type: Di().  To see some other
+catalogue, such as Algol, type: Di(Algol).
+
+Deleting a file. If your program is called "prog". type: del(algol.prog).
+
+Logging out. First, type KJOB to the CI. After it calms down, you should be talking to
+JMON again. (You may have to type another carriage return to get the "@" prompt.)
+Right now, it is necessary to type KJOB to JMON as well. (In the future, that won't be
+necessary.) There, you've used the system. That wasn't so bad, now was it?
+
+
+4.2.2 How to Do It (for battered Hydra users)
+
+	For more detailed information on how to use the facilities described in the
+preceding seetion, the advanced Hydra user can explore the contents of the
+Public.Algol68 catalogue; in particular, Public.Algol68.CMDs which contains the various
+COMMAND objects.
+
+
+4.2.3 Compilation Switches
+
+	Some of the compilation options listed below are not of interest to users; these
+are  marked with an asterisk.  Of the others, currently all  are  available  as
+pragmat-items as well. For instance, if your program contains the pragmat
+
+:: lower ::
+
+the remainder of the program (at least up to the next pragmat) v£ill be assumed to use
+the "lower" stropping convention.
+
+DEBUG		Enable compiler debugging mode of operation.
+GHOST*		Mumbo jumbo.
+LISTING		Produce compiler source listing output
+LOWER		Use lower stropping convention.
+NAKED:		Hocus pocus filiocus.
+NODEBUG:	Disable compiler debugging mode of operation.
+NOUHOST:	Disable mumbo jumbo.
+NOLISTING	Suppress compiler source listing output
+NONAKED:	Disable hocus pocus filiocus.
+NOWARNINGS	Do not output warning messages.
+POINT		Use point stropping convention.
+RES		Use reserved word stropping convention.
+UPPER		Use upper stropping convention.
+WARNINGS	Output warning messages.
+
+4.2.4	Execution Switches
+
+PDP-11 processors, but of  HYDRA processes; and that at any
+time the user's program may make use of fewer processes
+than the specified number, or it may be written as if it could
+make use of more; in either case it should still run and produce
+correct results
+Consult the implementors before using this switch.
+See the explanation in Section 4.2.2.
+DEBUG	Enable run-time system debugging mode of operation. This is
+	of some limited usefulness to users. The user is prompted for
+	a set of 'Flags', that is, a number; this number is treated as if it
+	had been passed as the second argument to a call on Systrace
+	(see document alien elsewhere) in the program.
+PROCESSES	The user's program is to be run on more than one process.
+	The user is prompted for a number of processes, which may
+	be from 1 to 16. Note that this is not a number of physical
+	PDP-11 processors, but of  HYDRA processes; and that at any
+	time the user's program may make use of fewer processes
+	than the specified number, or it may be written as if it could
+	make use of more; in either case it should still run and produce
+	correct results
+SPEEDUP	Consult the implementors before using this switch.
+STANDOUT	See the explanation in Section 4.2.2.
+
+
+4.2.5	Error Reporting
+
+	A compilation error is indicated by the printing of a vague message, the line
+6ontaining the error, and a line containing a position indicator beneath the first
+character of the most recently seen input lexeme at the time of the error. A position
+indicator is simply a digit printed in the appropriate position. if more then one error
+occurs in a given line, the error messages first to last, are associated with the position
+indicators, left to right, respecting the following rule. If many errors occur at the same
+position, the digit printed indicates the number of errors which occurred there.
+
+	Syntax errors will normally cause some portion of the input to be ignored. For
+the most part, any ignored characters are printed on the listing with equal signs
+beneath them.
+
+	No semantic processing of the program is done after the first compilation error
+occurs. Naturally, the run-time system is not called if an error is found.
+
+	There are also abnormal situations which are not quite as severe as errors.
+These cause a warning message to be printed in the same format as an error message
+except the fact that it is a warning is noted. Warnings do not cause semantic
+processing to stop.
+
+	Run-time errors are normally indicated by the printing of an accurate statement
+of what the problem is. This is accompanied by an indication of the source program
+line which was being executed when the error occurred.
+
+4.3.	Temporary Restrictions
+
+
+
+4.3.1	Things You Care About
+
+	- Soft balancing of identity-relations is not implemented.
+
+	- Transput of structured, long int, long real, and long comp values is
+not implemented.
+
+	- Some operators are not implemented (See 2.4.1).  In particular no
+operators which involve any of the modes long int, long real, or long
+compl are implemented.
+
+	- Some standard and particular prelude identifiers are not implemented
+(See 2.4.2).
+
+	- Program code size is restricted to 4096 words. This should be able
+to accomodate 200 to 300 source lines of program.
+
+
+4.3.2	Things You Do Not Care About
+
+	- Full and correct mode equivalence check is not implemented. Do not
+be worried about this.  The mode equivalence algorithm is almost
+totally correct. An appropriate prize will be awarded to the first
+user discovering two equivalent modes which are not recognized as
+such.
+
+	- Determination	of	necessary  environ based  on  use   of
+	applied-mode-indicant  as  actual-declarer is  not  implemented
+	completely.
+
+
+5.	Transput User's Guide
+
+This guide consists of two parts:
+
+1)	A description of the differences, hopefully minor for most users, between the
+transput system implemented at CMU, and the system described by the Reports
+on Algol 68 and Algol 68S.
+
+2)	A description of each of the channels available in the CMU library-prelude.
+
+	The reader should be familiar with the transput sections of the Revised Report
+(approximately 10.3.1 to 10.3.3 and 10.4), except for formatted transput, which is not
+implemented in the sublanguage.
+
+
+5.1.	Differences from the sublanguage
+
+
+
+5.1.1	Flip and Flop
+
+	On input, either of two letters is accepted as FLIP; either of two other letters is
+accepted as FLOP. See the section on Environment Enquiries.
+
+
+
+5.1.2	Unknown logical file end
+
+	On some (compressible) channels, the system makes decisions which have to rely
+on incomplete information about the logical end of a file. For instance, when a file is
+opened on the channel "var page channel", the system does not know where its logical
+end is, although this may be found out during later transput to that file. Thus during
+any particular transput operation the logical end of file may be "unknown", with the
+following consequences:
+
+(a)	during PUT CHAP and SPACE, the file is treated as if its logical end were at
+the current position; for instance, SPACE calls PUT CHAR(f, BLANK), and the
+logical file end is set to the next position on the current line.
+
+(b)	during NEWLINE (NEWPAGE), the current line (page) is examined to determine
+whether it contains the logical file end. This can be done on all available
+channels, and although it may leave the actual position of logical file end still
+unknown, the boolean value returned by this examination is enough to
+determine an appropriate action for NEWLINE or NEWPAGE
+
+5.1.3	Transput in parallel
+
+	During a transput operation using a ref file 'RF' concurrent (parallel) activity
+may cause RF to refer to a file different from the one which it referred to at the start
+of the operation. This may not be reflected properly in the transput that actually gets
+done. This is because the transput system dereferences RF only once, using the same
+file value for the entire operation. Note however that another dereferencing is done
+after each call on an event routine; this insures that programs which do not do
+unsynchronized parallel activity involving assignations to ref files which are in use will
+be elaborated exactly as described in the Report. As an example of the kind of
+program which might have unusual results, consider:
+
+BEGIN
+#
+The book on which we are about to do transput consists of
+at least one line, which contains a sprinkling of special
+characters, such  as "%"  and "/",  at strategic  points.
+For instance, the contents of the book might be:
+
+	abc%def/ghi%jkl
+	etc.
+
+Suppose we  read two strings from  the file.  Clearly the
+effect  of this  will  depend  on which  of the  special
+characters are  in the  termination string of the  file.
+We'll use this as a demonstration.
+#
+FILE rfx,rf;
+open (rf, "etaoinshrdlu", monongahela channel)
+rfx    rf;
+make term (rf, "%" );
+make term (rfx, "/%");
+STRING s1,
+s2 := "INIT", s3; CHAR c;
+
+PAR BEGIN
+# P1 #
+(rf := rfx; s3 := s2),
+# P1 #
+
+# P2 #
+	read (rf, (s1, c, s2))
+# P2 #
+END;
+# P3 - examine s2 and s3 #
+END
+
+At P3, s3 might be "INIT", indicating that when P1 was executed, s2 had not yet been
+read. We would expect, therefore, that the second string would not contain the special
+character "/", since that character is now part of the termination string of rf.
+However, this would not be the case. During all of P2, the file initially referred to by
+rf is locked in place, and the assignment of rfx to rf does not take effect until some
+event routine is called or the input is ended. This effect may be heightened during
+use of the default event routine (called "false" in the Revised Report); this is not
+treated as a normal event routine, for reasons of efficiency, and an assignment which
+is waiting to take effect when this routine is "called" is still waiting when transput is
+resumed.
+
+
+5.1.4	Rounding in Float
+
+	In certain pathological cases the routine FLOAT returns a string different from
+the one specified by the Report. This is deliberate and will be changed if the decision
+turns out to have been wrong. Consider:
+
+
+float(99.7e3, 5, 0, -1)
+
+The only representation of the given number which exactly meets the specifications of
+the given "width", "after", and "exp" parameters is
+
+
+"+99e9"
+
+The routine FLOAT presented in the Report, however, rejects this representation
+because it is not correctly rounded. It then tries representations with two digits of
+exponent, arriving at
+
+
+"+1e11"
+
+This is in fact rounded correctly, but it has a disadvantage of its own: it reveals only
+one digit of the number's mantissa, instead of revealing two digits, the second of which
+is off by 1, as the first representation does. Our implementation chooses the first
+representation in this and similar cases.
+
+
+
+5.1.5	Checking for invalid parameters
+
+	Establish, as described in the Report, checks the validity of the dimension
+arguments passed to it (P, L, and C) by making a value of mode POS from them and
+comparing it by means of the BEYOND operator to (1, 1, 1) and to the maximum
+dimensions of the channel involved. Unfortunately this is not a very strict test for
+validity, because of the nature of the BEYOND operator, which does not always look at
+all three dimensions. For instance, on a channel whose maximum dimensions are
+
+Pages per file - 10
+Lines per page - 50
+Characters per line - 100
+
+	the following combinations of dimension arguments (P, L, C) would "pass" the
+validity test, in spite of being completely unsuitable:
+
+(5, 25 -200)
+(5, 25, 200)
+(5, -100,0)
+(5,100, max int)
+
+	Instead of using the BEYOND operator, the CMU implementation uses a different
+operator, which we will call EXCEEDS;
+
+PRIO EXCEEDS = 5;
+OP EXCEEDS   (POS a, b) BOOL:
+		p OF a	> p OF b
+	OR	l OF a	> l OF b
+	OR	c OF a	> c OF b;
+
+5.1.6	Restriction on random access removed
+
+	The procedure Set, as described in the Revised Report, first saves the
+reacting/writing status of the file, in order to property restore it if the "logical file
+mended" routine of the file must be called clue to an attempt to set the position
+beyond the logical end of the file. Unfortunately this saving of the status is done as
+follows:
+
+
+BOOL reading =	(read mood OF f | TRUE |:
+write mood OF f | FALSE |
+| undefined; SKIP);
+
+This has the effect of calling "Undefined", which is usually interpreted in the CMU
+system as signalling a run-time error or warning message, if the file on which Set is
+being done is not yet in read or write mood, e.g. the Set operation is the first transput
+operation performed on a recently opened file. Since this operation is legitimate and
+indeed frequent with random access files, we have changed Sot so that it is allowed;
+the saving of the file's read/write status is done only if the saved status will be
+needed, i.e. when the "logical file mended" routine is about to be called.
+
+
+
+5.1.7	Checking of values input by Get Bin
+
+	For several of the modes which can be input by binary transput, the internal
+representation of values of that mode can also be used to represent "things" which are
+not legal values of that mode. For instance, REAL values are represented as pairs of
+PDP-11 words; but there are a great many possible pairs of PDP-11 words which do
+not represent legal REAL values. Currently, the CMU implementation of Get Bin does
+not do the (rather expensive) checking of input values necessary to weed out these
+illegal non-representations. This has the unfortunate consequence that the undefined
+value checking of the CMU run-time system can be circumvented, either accidentally or
+deliberately, by misapplication of Get Bin. This will be fixed if it develops into a
+severe problem.
+
+5.2.	Channels: general information
+
+	The routines Reset of C, Set of C, etc. associated with every channel C always
+return the same value. Part of the description of each channel is a list of the values
+returned by each of these routines
+
+Stand back channel is not yet implemented.
+
+	On some channels, Newline and Newpage are represented, at a level which is
+transparent to the Algol68 program, by special characters (e.g. form feed).  If the
+program explicitly outputs these characters as characters (for instance,
+
+print(REPR(12))  ),
+
+they will not be recognized as special characters; on input, however, they are always
+recognized.
+
+	On some channels, not all of the fields of the POS value returned by Max Pos are
+intended to be finite. For instance, the number of lines per page that may be written
+to a file opened on Cons Out Channel should be infinite. In practice it is equal to Max
+Int.
+
+	An attempt has been made to achieve some uniformity among the non-zero error
+codes returned by Establish and Open on the various channels.  Each error code
+consists of two parts; a "general" part, and a "specific" part. Since an integer is not a
+structured value, the division into parts is implemented by adding two integers, a
+general and a specific one, to form a single error code. The specific code is multiplied
+by 255 before adding it to the general code, so the original two codes can be
+reconstructed from their combination by either INT or BITS operations.
+
+	Each of the first few (6) general error codes can be associated in a loose way
+with a particular validity test in the Algol68 description of Establish and Open. Any
+other general error codes are dependent on the channels; all specific error codes are
+to be dependent on the operating environment (i.e. their meanings are expected to be
+different in different environments). Symbolic names and meanings of the first general
+error codes are as follows:
+
+(1) ERbadidf
+	something is wrong with the STRING argument to Open or
+	Establish. In Establish, Idf Ok returned FALSE; in Open, Match
+	never returned TRUE.
+
+(2) ERnowrite
+	writing could not be done, though reading might have been
+	possible.  In Establish, Put OF Chan returned FALSE (the
+	channel is read-only, e.g. a paper tape reader); in Open,
+	Putting OF Book was TRUE (the book was being written).
+
+(3) ERnof avail
+	File  Available  (Chan)  returned  FALSE.  This  signals  a
+	temporary problem which can often be handled by retrying
+	the Open or Establish - for instance, there is no room in some
+	directory system for a new file.
+
+(4) ERnoestab
+	Estab OF Chan returned FALSE.  This indicates a more
+	permanent problem--files simply may not be established on
+	the channel.
+
+(5) ERposmax
+	One of the dimension arguments to Establish is too large.
+
+(6) ERposneg
+	One of the dimension arguments to Establish is too small.
+
+
+5,3,  Channels: what's availablo
+
+5.3.1	Line printer output: Stend out channel
+
+reset		FALSE
+set		FALSE
+get		FALSE
+put		TRUE
+bin		FALSE
+compress	TRUE
+reidf		FALSE
+
+pages per file		oo
+linds per page		55
+characters per line	132
+
+55
+132
+
+	The nature of Stand out channel may be specified by the user when his program
+starts execution. Currently there are three alternatives; it may be the same as Cons
+out channel (i.e. it may be used for output to the terminal); it may be used for output
+directly to the line printer; or it may be used for output to a file, of the SOS subfile
+type. The first of these alternatives-is explained more fully in the next section. Of the
+other two, it is more flexible to use an SOS-type file for Stand out channel, because
+this file may still be listed at the end of a run, or typed, or saved for future use; but
+setting Stand out channel for direct line printer output allows the user to open more
+than one file on that channel (though not more than one at a time), and each of those
+files is listed as soon as it is closed, not at the end of the run. The procedure for
+specifying what is to be done with Stand out channel is explained elsewhere.
+
+	For line printer output, the string parameter to Open is used as the name on the
+banner page of the listing; however if that parameter is undefined or is a string of
+zero length, the name on the banner will be "ALGOL68 USER". (This may be changed in
+the future.)
+
+	Newline is represented by a CR-LF sequence, Newpage by a form feed
+character.
+
+There are no specific error codes. The general error codes are as follows;
+
+	(3)	ERnetavait	the File System is full.
+
+	(4)	ERposmax	has the usual meaning
+
+	(5)	ERposneg	has the usual meaning
+
+	(7)	ERoneonly	a file has already been opened on this channel, and not yet
+closed.
+
+
+5.3.2	Terminal input & output: Cons in & Cons out channel
+
+	Stand in channel represents (at this writing) the user's terminal. Output to the
+terminal is done through a different channel, Cons out channel. (Cons in channel is
+provided; it is the same as Stand in channel.) Both these channels are makeshift,
+relying heavily on the Hydra terminal system and providing few features of their own.
+
+Cons in channel			Cons out channel
+
+reset		FALSE		FALSE
+set		FALSE		FALSE
+get		TRUE		FALSE
+put		FALSE		TRUE
+bin		FALSE		FALSE
+compress	(N.A.)		TRUE
+reidf		FALSE		FALSE
+
+pages per file			oo
+lines per page			oo
+characters per line		79
+
+	Newline is represented by a CR-LF sequence. Newpage is represented by the
+FF character. Logical end of file may be signaled on input by typing control-Z.
+
+	Note that Cons in channel and Cons out channel are completely independent of
+each other; the system doesn't recognize that they're both dealing with the same
+device. For instance the result of a call of Char number on a file opened on Cons out
+channel depends only on the number of characters the program has output to that file
+since the last Newline; if characters have also been typed in, in order to do input to
+some file opened on Cons in channel, this number is not "right", i.e. it is not equal to
+how far the terminal's cursor is from the left margin.
+
+	Currently there are some glitches in the behavior of Cons in channel because of
+the simpleminded nature of its implementation. It does input in line-at-a-time fashion,
+i.e. the system does not recognize that characters have been typed in until a CR-LF
+sequence has been typed after them. Also, due to a bug in the SIX12 system which is
+used to support Algol68, lines of more than 71 characters may not be input (you can
+try it, but it won't work).
+
+	There are no error codes for Cons in channel, and the only error codes for Cons
+out channel are ERposmax and ERposneg.
+
+
+5.3.3	PAGE objects: Var & fixed page channel
+
+	Two channels are available which can deal with PAGE objects. One tre.~ts a
+PAGE as a file of one page, with fixed-length lines; this is called Fixed page channel,
+and binary transput can be done using it. Currently the lines must be exactly 512
+(that is, 2**9) characters in length; in the future, this may be made more flexible. The
+other, Var page channel, uses variable length lines and pages, delimited by the usual
+special ASCII characters; the physical size bounds of a file are determined at any point
+by the number of characters which could be packed into the remainder of the page.
+For compatibility with TECO, when a page which has been opened for writing is closed,
+if the position of the logical file end is known the rest of the page is filled with
+zeroes.
+
+
+Fixed page channel		Var page channel
+
+reset		TRUE		TRUE
+sot		TRUE		FALSE
+get		TRUE		TRUE
+put		TRUE		TRUE
+bin		TRUE		FALSE
+compress	FALSE		TRUE
+reidf		TRUE		TRUE
+
+pages per file	1		(initially 8000)
+lines per page	2**4 (16)	(initially 4000)
+characters per line
+		2**9 (512)	(initially 8000)
+
+	Var page channel is one of the channels on which the logical end of a file may
+be unknown.  A null character is assumed to indicate the logical end, as does the
+physical end of the PAGE.
+
+	The two page channels are directory-system oriented. The string passed to
+OPEN or ESTABLISH is assumed to be in proper format to be passed directly to the
+directory subsytem: its length should be a multiple of 10 characters, and each group of
+ten characters is a name, padded if necessary with blanks. When Establish is called,
+the page is put directly in &userdirectory when the file is closed. Note that this is
+possible only because the ALGOL68 Commands object passes &userdirectory to the
+ALGOL68 compiler as a parameter; if some other directory is passed, it will be used as
+the standard base for directory lookups.  When Open is called, &userdirectory is
+searched for the PAGE object named. Note that if the PAGE is protected so as to be
+unmodifyable, the routine Put OF Var (or Fixed) page channel is set to return FALSE
+for that file.
+
+	If the file is never in write mood while it is opened, it is not replaced in the
+directory when it is closed. If it is ever written, the old directory entry is replaced by
+the changed page when the file is closed. If C.mmp crashes while a program is running
+which is changing one or more PAGES, only the ones whose files have been closed will
+be changed when C.mmp is restarted. No attempt is made to allow two programs, or
+two parts of the same program, to change a PAGE simultaneously; although any number
+of files may be opened at once using the same original PAGE object, only the
+modifications made by one of them will have any permanent effect, namely, the one
+which last calls Close.
+
+	Reidf is not implemented yet. However, when it is implemented, it will take
+effect only when the PAGE file is closed. That is, if C.mmp crashes before a file is
+closed, the PAGE entry in the directory will not have been renamed, even if the
+program has demonstrably called Reidf.
+
+Error codes for both channels are as follows;
+
+(1) ERbadidf
+	the string argument to Establish is not checked (until the file
+	is closed). The string argument to Open is checked, with the
+	following specific error codes:
+
+	0 - The directory lookup failed.
+
+	1 - The object found was not a PAGE.
+
+	2 - The page did not have COPYRTS (the program could not
+		make a temporary copy of it for its own use).
+
+
+(4) ERposmax	has the usual meaning
+
+(5) ERposneg	has the usual meaning
+
+
+5.3.4	SOS files: SOS file channel
+
+	This channel can do sequential input or output to files of the SOS subfile type.
+if someone wants it enough, the SOS subfile system maintainers will implement random
+access to such files, whereupon the Algol68 system maintainers will promptly and
+cheerfully upgrade this channel to allow random access.
+
+Sos file channel
+
+reset		FALSE
+set		FALSE
+get		TRUE
+put		TRUE
+bin		FALSE
+compress	TRUE
+reidf		TRUE
+
+pages per file		oo
+lines per page		oo
+characters per line		256
+
+	Unfortunately, there is not and probably never will be any relation between the
+line numbers provided by SOS and the line numbers provided by the Algol68 system.
+For instance, if a program is doing transput to an SOS file, and is on the fifth line of a
+page, a call of the routine "line number" will inevitably return 5; whereas the SOS line
+number -associated with that line is likely to be 500, and could be practically anything
+greater than or equal to 5.
+
+	Like the page channels, the SOS file channel is directory-system oriented. The
+behavior of REIDF, however, when it is implemented, still be different; it will take effect
+immediately, and in fact its effect will be noted even it the file is scratched.
+
+Error codes for both channels are as follows:
+
+(1) ERbadidf
+	the string argument to Establish is not checked (until the file
+	is closed). The string argument to Open is checked, with the
+	following specific error codes:
+
+	0 - The directory lookup failed.
+
+	1 - The object found was not a file of the SOS subfile type.
+
+	2 - The file could not be opened either for reading or
+		writing.
+
+(2) ERnowrite	The file is currently opened for writing.
+
+(4) ERposmax	has the usual meaning
+
+(5) ERposneg	has the usual meaning
