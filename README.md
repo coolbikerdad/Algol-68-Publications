@@ -1,2 +1,2 @@
 # Algol-68-Publications
-Collected Publications for Algol-68RS
+Collected Publications for Algol-68
