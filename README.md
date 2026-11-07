@@ -30,6 +30,8 @@ Collected Publications for Algol-68
 * The Making of Algol68 by C.H.A Koster 
 ## Marcel van der Veer
 * Learning Algol 68 Genie by M. van der Veer (ed.) 2008-2016
+## Cambridge University Press
+* Algol 68 A First and Second Course by Andrew D. McGettrick 1978
 ## Macmillan Press
 * An Introduction to Algol 68 through Problems by A. Learner and A.J. Powell 1974
 * Programming and Problem-Solving in Algol 68 by A.J.T. Colin 1978
@@ -48,3 +50,5 @@ Collected Publications for Algol-68
 * A Revised ALGOL 68 Hardware Representation for ISO-code and EBCDIC by Wifred J. Hansen 1973
 ## Control Data Corporation (CDC)
 * CDC Algol 68 version 1 Reference Manual 1976
+## Claude Opus
+* Algol  68 in Modern Terms 2026
